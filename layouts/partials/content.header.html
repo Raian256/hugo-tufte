@@ -1,4 +1,14 @@
 <section>
+{{- with .Params.series -}}
+<p class="series-marker">
+  <span class="series-label">Series:</span>
+  {{- $sep := "" -}}
+  {{- range . -}}
+    {{ $sep }}<a href="{{ "/series/" | absURL }}{{ . | urlize }}">{{ . }}</a>
+    {{- $sep = ", " -}}
+  {{- end -}}
+</p>
+{{- end -}}
 <h1 class="content-title">
 {{- .Title -}}{{- if .Draft -}}&nbsp;:: Draft{{- end -}}
 </h1>
