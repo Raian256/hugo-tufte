@@ -74,7 +74,7 @@
         <span class="book-title">{{ .title }}</span>, {{ .author }}
         <span class="topic-meta">
           {{- with .stars }}{{ . }} · {{ end -}}
-          <time datetime="{{ .finished.Format "2006-01-02" }}">{{ .finished.Format "2 January 2006" }}</time>
+          <time datetime="{{ .datetime }}">{{ .when }}</time>
           {{- with .page }} · <a href="{{ .RelPermalink }}">full note</a>{{ end -}}
         </span>
       </li>

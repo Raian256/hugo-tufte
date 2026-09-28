@@ -1,0 +1,32 @@
+{{/*
+  A log grouped by person (author, artist), like the index of a book: each
+  person with a count and mean rating, then their works, newest first.
+  Usage: partial "log-by-person.html" (dict "entries" $books "key" "author" "people" $people "noun" "books" "singular" "book")
+*/}}
+<section class="log-view log-by-person" data-view="person" hidden>
+{{ range .people }}
+  {{ $name := .name }}
+  {{ $works := where $.entries $.key $name }}
+  {{ $rated := where $works "rating" "gt" 0 }}
+  <div class="log-group">
+    <h2 class="log-person">{{ $name }}
+      <span class="log-person-meta">
+        {{- len $works }} {{ cond (eq (len $works) 1) $.singular $.noun -}}
+        {{- with $rated }}{{ $sum := 0.0 }}{{ range . }}{{ $sum = add $sum .rating }}{{ end }} · mean {{ lang.FormatNumber 1 (div $sum (len .)) }}&#8201;★{{ end -}}
+      </span>
+    </h2>
+    <ul class="log-works">
+      {{ range $w := $works }}
+      <li class="log-item" data-rating="{{ $w.rating | default 0 }}">
+        <span class="diary-title">{{ $w.title }}</span>
+        <span class="diary-meta">
+          {{- with $w.stars }}<span class="stars" aria-label="{{ $w.rating }} out of 5">{{ . }}</span>{{ end -}}
+          <time datetime="{{ $w.datetime }}">{{ $w.when }}</time>
+          {{- with $w.page }} · <a href="{{ .RelPermalink }}">full note</a>{{ end -}}
+        </span>
+      </li>
+      {{ end }}
+    </ul>
+  </div>
+{{ end }}
+</section>

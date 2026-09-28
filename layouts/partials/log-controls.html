@@ -1,0 +1,26 @@
+{{/*
+  The filter line above a book or album log: view by date or by person, and a
+  minimum rating. Hidden until log-filter.js runs, so without JavaScript the
+  page is simply the full list.
+  Usage: partial "log-controls.html" (dict "noun" "books" "person" "author")
+*/}}
+<div class="log-controls" hidden>
+  <p class="log-controls-line">
+    <span class="log-control">
+      <span class="log-label">View by</span>
+      <button type="button" class="log-by" data-by="date" aria-pressed="true">date</button>
+      <span class="log-sep" aria-hidden="true">·</span>
+      <button type="button" class="log-by" data-by="person" aria-pressed="false">{{ .person }}</button>
+    </span>
+    <span class="log-control">
+      <span class="log-label" id="log-min-label">rated at least</span>
+      <span class="log-stars" role="group" aria-labelledby="log-min-label">
+        {{- range seq 5 -}}
+        <button type="button" data-min="{{ . }}" aria-pressed="false" aria-label="{{ . }} {{ cond (eq . 1) "star" "stars" }}">★</button>
+        {{- end -}}
+      </span>
+    </span>
+  </p>
+  <p class="log-status" aria-live="polite" data-noun="{{ .noun }}"></p>
+</div>
+<p class="log-none" hidden>Nothing matches. <button type="button" class="log-clear">Clear filters</button></p>

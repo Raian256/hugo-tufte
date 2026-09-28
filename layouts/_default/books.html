@@ -3,28 +3,36 @@
   {{ if not site.Params.hideRunningHead }}{{ partial "running-head.html" . }}{{ end }}
   {{ partial "content.header.html" . }}
   {{ with partialCached "books.html" . "books" }}
-  <section>
-  {{ $year := "" }}
-  {{ range $b := . }}
-    {{ $y := .finished.Format "2006" }}
-    {{ if ne $y $year }}
-      <h2 class="diary-month">{{ $y }}</h2>
-      {{ $year = $y }}
+  {{ $books := . }}
+  {{ $people := partial "log-people.html" (dict "entries" $books "key" "author" "sort" "surname") }}
+  <div data-log>
+    {{ partial "log-controls.html" (dict "noun" "books" "person" "author") }}
+
+    <section class="log-view" data-view="date">
+    {{ range partial "log-groups.html" (dict "entries" $books "field" "finished" "format" "2006") }}
+      <div class="log-group">
+        <h2 class="diary-month">{{ .key }}</h2>
+        {{ range $b := .items }}
+        <div class="diary-entry log-item" data-rating="{{ $b.rating | default 0 }}">
+          <p class="diary-head">
+            <span class="diary-title">{{ $b.title }}</span>
+            <span class="book-author">{{ $b.author }}</span>
+            <span class="diary-meta">
+              {{- with $b.stars }}<span class="stars" aria-label="{{ $b.rating }} out of 5">{{ . }}</span>{{ end -}}
+              {{- with $b.whenInYear }}<time datetime="{{ $b.datetime }}">{{ . }}</time>{{ end }}
+            </span>
+          </p>
+          {{ with $b.review }}<div class="diary-review">{{ . | markdownify }}</div>{{ end }}
+          {{ with $b.page }}<p class="diary-post"><a href="{{ .RelPermalink }}">Read the full note: {{ .Title }}</a></p>{{ end }}
+        </div>
+        {{ end }}
+      </div>
     {{ end }}
-    <div class="diary-entry">
-      <p class="diary-head">
-        <span class="diary-title">{{ .title }}</span>
-        <span class="book-author">{{ .author }}</span>
-        <span class="diary-meta">
-          {{- with .stars }}<span class="stars" aria-label="{{ $b.rating }} out of 5">{{ . }}</span>{{ end -}}
-          <time datetime="{{ .finished.Format "2006-01-02" }}">{{ .finished.Format "2 January" }}</time>
-        </span>
-      </p>
-      {{ with .review }}<div class="diary-review">{{ . | markdownify }}</div>{{ end }}
-      {{ with .page }}<p class="diary-post"><a href="{{ .RelPermalink }}">Read the full note: {{ .Title }}</a></p>{{ end }}
-    </div>
-  {{ end }}
-  </section>
+    </section>
+
+    {{ partial "log-by-person.html" (dict "entries" $books "key" "author" "people" $people "noun" "books" "singular" "book") }}
+  </div>
+  {{ partial "log-script.html" . }}
   {{ else }}
   <section><p class="diary-empty">The shelf is empty for now.</p></section>
   {{ end }}

@@ -1,6 +1,8 @@
 {{/*
   Reads data/albums.toml and returns its entries newest first, with `title`,
-  `artist` and `year` filled in, `listened` parsed as a date, `stars` rendered,
+  `artist` and `year` filled in, `listened` parsed as a date for sorting (it may
+  be "YYYY", "YYYY-MM" or "YYYY-MM-DD"; see partial-date.html, whose `datetime`,
+  `when`, `month` and `day` are added too), `stars` rendered,
   `page` resolved to a published post (or nil), and `cover` as a resized image
   resource (or nil).
 
@@ -36,12 +38,18 @@
     {{ with resources.GetMatch (printf "covers/%s.*" .) }}{{ $cover = .Fill "180x180 webp q80" }}{{ end }}
   {{ end }}
 
+  {{ $d := partial "partial-date.html" (dict "value" .listened "what" (printf "albums: %q, listened" $title)) }}
+
   {{ $albums = $albums | append (merge . (dict
     "mbid" $mbid
     "title" $title
     "artist" $artist
     "year" $year
-    "listened" (time.AsTime .listened)
+    "listened" $d.date
+    "datetime" $d.datetime
+    "when" $d.when
+    "month" $d.month
+    "day" $d.day
     "stars" (partial "stars.html" .rating)
     "page" $post
     "cover" $cover

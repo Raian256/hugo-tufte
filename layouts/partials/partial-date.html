@@ -1,0 +1,31 @@
+{{/*
+  Parses a date that may be only partly known: "YYYY", "YYYY-MM" or
+  "YYYY-MM-DD" (an unquoted TOML date works too). Used by the book and album
+  logs. Usage: partial "partial-date.html" (dict "value" .finished "what" "books: Title")
+
+  Returns a dict:
+    date        for sorting: the first day of the year or month when that's
+                all that's known, so less precise dates sort last
+    datetime    the date as written, for <time datetime="…">
+    precision   "year", "month" or "day"
+    when        as precisely as known: "5 March 2024", "March 2024", "2024"
+    whenInYear  without the year: "5 March", "March", ""
+    month       the month heading it belongs under: "March 2024", or "2024" when only the year is known
+    day         within its month: "Tuesday 5", or ""
+*/}}
+{{ $raw := substr (printf "%v" .value | strings.TrimSpace) 0 10 }}
+{{ if not (findRE `^\d{4}(-\d{2}(-\d{2})?)?$` $raw) }}
+  {{ errorf "%s: date must be YYYY, YYYY-MM or YYYY-MM-DD, not %q" .what $raw }}
+{{ end }}
+{{ $r := dict "datetime" $raw }}
+{{ if eq (len $raw) 4 }}
+  {{ $date := time.AsTime (print $raw "-01-01") }}
+  {{ $r = merge $r (dict "date" $date "precision" "year" "when" $raw "whenInYear" "" "month" $raw "day" "") }}
+{{ else if eq (len $raw) 7 }}
+  {{ $date := time.AsTime (print $raw "-01") }}
+  {{ $r = merge $r (dict "date" $date "precision" "month" "when" ($date.Format "January 2006") "whenInYear" ($date.Format "January") "month" ($date.Format "January 2006") "day" "") }}
+{{ else }}
+  {{ $date := time.AsTime $raw }}
+  {{ $r = merge $r (dict "date" $date "precision" "day" "when" ($date.Format "2 January 2006") "whenInYear" ($date.Format "2 January") "month" ($date.Format "January 2006") "day" ($date.Format "Monday 2")) }}
+{{ end }}
+{{ return $r }}

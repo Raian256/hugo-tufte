@@ -1,7 +1,11 @@
 {{/*
-  Reads data/books.toml and returns its entries newest first, with `finished`
-  parsed as a date, `stars` rendered, and `post` resolved to a published page
-  (or nil if it doesn't exist or is still a draft).
+  Reads data/books.toml and returns its entries newest first, with `stars`
+  rendered and `post` resolved to a published page (or nil if it doesn't exist
+  or is still a draft).
+
+  `finished` may be "YYYY", "YYYY-MM" or "YYYY-MM-DD" (see partial-date.html).
+  Each entry gets `finished` as a date for sorting, plus `datetime`, `when`
+  and `whenInYear` from partial-date.html.
 */}}
 {{ $books := slice }}
 {{ range hugo.Data.books.books }}
@@ -9,8 +13,14 @@
   {{ with .post }}
     {{ with site.GetPage . }}{{ $post = . }}{{ else }}{{ warnf "books: no published page at %q" . }}{{ end }}
   {{ end }}
+
+  {{ $d := partial "partial-date.html" (dict "value" .finished "what" (printf "books: %q, finished" .title)) }}
+
   {{ $books = $books | append (merge . (dict
-    "finished" (time.AsTime .finished)
+    "finished" $d.date
+    "datetime" $d.datetime
+    "when" $d.when
+    "whenInYear" $d.whenInYear
     "stars" (partial "stars.html" .rating)
     "page" $post
   )) }}

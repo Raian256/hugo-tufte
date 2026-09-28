@@ -1,0 +1,22 @@
+{{/*
+  Splits entries (already in order) into consecutive groups for headings.
+  Usage: partial "log-groups.html" (dict "entries" $albums "field" "month")
+         partial "log-groups.html" (dict "entries" $books "field" "finished" "format" "2006")
+  With `format`, the field is a date and the key is that date formatted.
+  Returns a slice of dicts: key, items.
+*/}}
+{{ $groups := slice }}
+{{ $key := "" }}
+{{ $items := slice }}
+{{ range .entries }}
+  {{ $k := index . $.field }}
+  {{ with $.format }}{{ $k = $k.Format . }}{{ end }}
+  {{ if and $items (ne $k $key) }}
+    {{ $groups = $groups | append (dict "key" $key "items" $items) }}
+    {{ $items = slice }}
+  {{ end }}
+  {{ $key = $k }}
+  {{ $items = $items | append . }}
+{{ end }}
+{{ with $items }}{{ $groups = $groups | append (dict "key" $key "items" .) }}{{ end }}
+{{ return $groups }}

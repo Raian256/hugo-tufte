@@ -3,34 +3,43 @@
   {{ if not site.Params.hideRunningHead }}{{ partial "running-head.html" . }}{{ end }}
   {{ partial "content.header.html" . }}
   {{ with partialCached "albums.html" . "albums" }}
-  <section>
-  {{ $month := "" }}
-  {{ range $i, $a := . }}
-    {{ $m := $a.listened.Format "January 2006" }}
-    {{ if ne $m $month }}
-      <h2 class="diary-month">{{ $m }}</h2>
-      {{ $month = $m }}
-    {{ end }}
-    <div class="diary-entry">
-      <p class="diary-head">
-        {{ with $a.cover }}
-        <label for="cover-{{ $i }}" class="margin-toggle marginnote-ind">&#8853;</label>
-        <input type="checkbox" id="cover-{{ $i }}" class="margin-toggle"/>
-        <span class="marginnote"><img src="{{ .RelPermalink }}" width="90" height="90" alt="Cover of {{ $a.title }}" loading="lazy"></span>
+  {{ $albums := . }}
+  {{ $people := partial "log-people.html" (dict "entries" $albums "key" "artist" "sort" "name") }}
+  <div data-log>
+    {{ partial "log-controls.html" (dict "noun" "albums" "person" "artist") }}
+
+    <section class="log-view" data-view="date">
+    {{ range partial "log-groups.html" (dict "entries" $albums "field" "month") }}
+      <div class="log-group">
+        <h2 class="diary-month">{{ .key }}</h2>
+        {{ range $a := .items }}
+        {{ $id := printf "cover-%s" (substr (md5 (print $a.title $a.artist $a.datetime)) 0 10) }}
+        <div class="diary-entry log-item" data-rating="{{ $a.rating | default 0 }}">
+          <p class="diary-head">
+            {{ with $a.cover }}
+            <label for="{{ $id }}" class="margin-toggle marginnote-ind">&#8853;</label>
+            <input type="checkbox" id="{{ $id }}" class="margin-toggle"/>
+            <span class="marginnote"><img src="{{ .RelPermalink }}" width="90" height="90" alt="Cover of {{ $a.title }}" loading="lazy"></span>
+            {{ end }}
+            <span class="diary-title">{{ $a.title }}</span>
+            <span class="album-artist">{{ $a.artist }}</span>
+            {{ with $a.year }}<span class="diary-year">{{ . }}</span>{{ end }}
+            <span class="diary-meta">
+              {{- with $a.stars }}<span class="stars" aria-label="{{ $a.rating }} out of 5">{{ . }}</span>{{ end -}}
+              {{- with $a.day }}<time datetime="{{ $a.datetime }}">{{ . }}</time>{{ end }}
+            </span>
+          </p>
+          {{ with $a.review }}<div class="diary-review">{{ . | markdownify }}</div>{{ end }}
+          {{ with $a.page }}<p class="diary-post"><a href="{{ .RelPermalink }}">Read the full note: {{ .Title }}</a></p>{{ end }}
+        </div>
         {{ end }}
-        <span class="diary-title">{{ $a.title }}</span>
-        <span class="album-artist">{{ $a.artist }}</span>
-        {{ with $a.year }}<span class="diary-year">{{ . }}</span>{{ end }}
-        <span class="diary-meta">
-          {{- with $a.stars }}<span class="stars" aria-label="{{ $a.rating }} out of 5">{{ . }}</span>{{ end -}}
-          <time datetime="{{ $a.listened.Format "2006-01-02" }}">{{ $a.listened.Format "Monday 2" }}</time>
-        </span>
-      </p>
-      {{ with $a.review }}<div class="diary-review">{{ . | markdownify }}</div>{{ end }}
-      {{ with $a.page }}<p class="diary-post"><a href="{{ .RelPermalink }}">Read the full note: {{ .Title }}</a></p>{{ end }}
-    </div>
-  {{ end }}
-  </section>
+      </div>
+    {{ end }}
+    </section>
+
+    {{ partial "log-by-person.html" (dict "entries" $albums "key" "artist" "people" $people "noun" "albums" "singular" "album") }}
+  </div>
+  {{ partial "log-script.html" . }}
   {{ else }}
   <section><p class="diary-empty">Nothing logged yet.</p></section>
   {{ end }}

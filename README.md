@@ -151,13 +151,13 @@ A page listing the books you have read, grouped by year, newest first. Each entr
    [[books]]
    title = "Euthyphro"                # required
    author = "Plato"                   # required
-   finished = "2026-09-20"            # required, YYYY-MM-DD
+   finished = "2026-09-20"            # required: YYYY-MM-DD, or YYYY-MM / YYYY if that's all you remember
    rating = 4.5                       # optional, 0.5 to 5, halves allowed
    review = "Short and *unresolved*." # optional, Markdown allowed
    post = "posts/euthyphro"           # optional, path under content/
    ```
 
-   Order doesn't matter; entries are sorted by `finished`. The `post` link only appears once that page exists and is published (or when you build with `--buildDrafts`); otherwise the build prints a `books: no published page at …` warning and the book is shown without the link.
+   Order doesn't matter; entries are sorted by `finished`. A date is shown only as precisely as it's written ("5 March", "March", or just under its year's heading), and within a year or month, books without an exact date come after the dated ones. The `post` link only appears once that page exists and is published (or when you build with `--buildDrafts`); otherwise the build prints a `books: no published page at …` warning and the book is shown without the link.
 
 2. Create the page, e.g. `content/books.md`:
 
@@ -173,12 +173,21 @@ The [home page](#home-page) can show your latest books under a topic. To use the
 
 ```go-html-template
 {{ range first 3 (partialCached "books.html" . "books") }}
-  <em>{{ .title }}</em>, {{ .author }} {{ .stars }} {{ .finished.Format "2 Jan 2006" }}
+  <em>{{ .title }}</em>, {{ .author }} {{ .stars }} {{ .when }}
   {{ with .page }}<a href="{{ .RelPermalink }}">full note</a>{{ end }}
 {{ end }}
 ```
 
-Each entry has the fields from the data file, with `finished` parsed as a date, plus `stars` (the rating as text, e.g. `★★★★½`) and `page` (the linked post, or empty).
+Each entry has the fields from the data file, with `finished` parsed as a date for sorting, plus `when` (the date as precisely as known, e.g. `March 2024`), `whenInYear` (the same without the year), `datetime` (the date as written), `stars` (the rating as text, e.g. `★★★★½`) and `page` (the linked post, or empty).
+
+#### Browsing the logs
+
+The reading log and album log pages open with a line of controls:
+
+- **View by** *date* (grouped by year or month) or by *author* / *artist*: an index of people, which is also how to see one person's works in order, sorted by surname for authors and by name for artists (ignoring a leading "The"), each with a count and mean rating, then their works, newest first.
+- **Rated at least** one to five stars. Click a star to set the threshold, and click it again to clear it. Unrated entries are hidden while it's set.
+
+Filters apply to both views, headings left empty are hidden, and a line says how many entries are shown. The choice is kept in the address (`/books/?by=person&min=4`), so a filtered view can be linked to. This is the theme's only JavaScript besides KaTeX: a small script loaded on these two pages. Without it, the controls don't appear and the full list is shown.
 
 ### Album log
 
@@ -189,11 +198,13 @@ A page of the albums you have listened to, grouped by month, newest first, with 
    ```toml
    [[albums]]
    mbid = "https://musicbrainz.org/release-group/017f2a37-a78f-3578-9611-fa40408e5d90"
-   listened = "2026-09-12"                  # required, YYYY-MM-DD
+   listened = "2026-09-12"                  # required: YYYY-MM-DD, or YYYY-MM / YYYY
    rating = 4.5                             # optional, 0.5 to 5
    review = "*The Ninth Wave* is a novel."  # optional, Markdown
    post = "posts/hounds-of-love"            # optional, path under content/
    ```
+
+   Like the reading log, `listened` can be just a year and month or a year when that's all you remember: the album goes under that month's heading without a day, or under a heading for the year alone, after that year's months.
 
    `mbid` identifies the album's [MusicBrainz](https://musicbrainz.org/) *release group*: paste its page URL or just the ID. To find it, search for the album on MusicBrainz, open the release group (not one specific release), and copy the address.
 
@@ -221,7 +232,7 @@ A page of the albums you have listened to, grouped by month, newest first, with 
    ---
    ```
 
-To show recent covers on the home page, set `albums` on a topic (see [Home page](#home-page)). In your own templates, use `{{ partial "albums-strip.html" (dict "count" 6 "log" "/albums/") }}`, or `partialCached "albums.html" . "albums"` for the entries themselves: the data file's fields with `title`, `artist` and `year` filled in, plus `listened` as a date, `stars`, `page` (the linked post) and `cover` (an image resource).
+To show recent covers on the home page, set `albums` on a topic (see [Home page](#home-page)). In your own templates, use `{{ partial "albums-strip.html" (dict "count" 6 "log" "/albums/") }}`, or `partialCached "albums.html" . "albums"` for the entries themselves: the data file's fields with `title`, `artist` and `year` filled in, plus `listened` as a date for sorting, `when`, `month`, `day` and `datetime` (see the reading log), `stars`, `page` (the linked post) and `cover` (an image resource).
 
 ### Letterboxd diary
 

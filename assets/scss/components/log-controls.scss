@@ -1,0 +1,170 @@
+/* ------------------------------------------------------------------------ */
+/* Book and album logs: the filter line and the by-person view.            */
+/* ------------------------------------------------------------------------ */
+
+$log-ink: #111;
+$log-faded: #6f6a5f;
+$log-rule: #d8d4c8;
+
+// Buttons that read as words in a sentence.
+@mixin log-text-button {
+    font: inherit;
+    color: $log-faded;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+}
+
+.log-controls {
+    width: 55%;
+    margin: 1.4rem 0 0.4rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid $log-rule;
+
+    .log-controls-line {
+        width: auto;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0.4rem 1.8rem;
+        margin: 0;
+        font-size: 1.2rem;
+    }
+
+    .log-control {
+        white-space: nowrap;
+    }
+
+    .log-label {
+        font-style: italic;
+        color: $log-faded;
+        margin-right: 0.35em;
+    }
+
+    .log-sep {
+        color: $log-faded;
+        margin: 0 0.25em;
+    }
+
+    .log-by {
+        @include log-text-button;
+        font-variant: small-caps;
+        letter-spacing: 0.06em;
+
+        &[aria-pressed="true"] {
+            color: $log-ink;
+            text-decoration: underline;
+            text-underline-offset: 0.25em;
+            text-decoration-thickness: 1px;
+        }
+
+        &:hover {
+            color: $log-ink;
+        }
+    }
+
+    // Five stars; hovering previews the threshold, the chosen one stays filled.
+    .log-stars {
+        button {
+            @include log-text-button;
+            color: $log-rule;
+            font-size: 1.15em;
+            padding: 0 0.04em;
+
+            &.on {
+                color: $log-ink;
+            }
+        }
+
+        &:hover button {
+            color: $log-ink;
+        }
+
+        button:hover ~ button {
+            color: $log-rule;
+        }
+    }
+
+
+    button:focus-visible {
+        outline: 1px solid $log-ink;
+        outline-offset: 2px;
+    }
+
+    .log-status {
+        width: auto;
+        margin: 0.4rem 0 0;
+        font-size: 1.1rem;
+        font-style: italic;
+        color: $log-faded;
+
+        &:empty {
+            display: none;
+        }
+    }
+}
+
+.log-none {
+    font-style: italic;
+    color: $log-faded;
+
+    .log-clear {
+        @include log-text-button;
+        font-style: normal;
+        color: $log-ink;
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+    }
+}
+
+// The by-person view, set like a book's index.
+.log-by-person {
+    h2.log-person {
+        margin: 2.4rem 0 0.3rem;
+        font-size: 1.7rem;
+        font-style: normal;
+        font-variant: small-caps;
+        letter-spacing: 0.06em;
+    }
+
+    .log-person-meta {
+        margin-left: 0.6em;
+        font-size: 1.1rem;
+        font-variant: normal;
+        letter-spacing: normal;
+        font-style: italic;
+        color: $log-faded;
+    }
+
+    .log-works {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 0;
+        width: 55%;
+
+        li {
+            font-size: 1.4rem;
+            padding: 0.15rem 0;
+        }
+
+        .diary-meta {
+            margin-left: 0.6em;
+        }
+
+        .stars {
+            margin-right: 0.6em;
+        }
+
+        time {
+            font-size: 0.85em;
+        }
+    }
+}
+
+@media (max-width: 760px) {
+    .log-controls,
+    .log-by-person .log-works {
+        width: 100%;
+    }
+}

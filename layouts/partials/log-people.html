@@ -1,0 +1,21 @@
+{{/*
+  The distinct people (authors, artists) in a log, sorted for an index.
+  Usage: partial "log-people.html" (dict "entries" $books "key" "author" "sort" "surname")
+    sort  "surname": by the last word of the name ("G. H. Hardy" under H)
+          "name":    by the whole name, ignoring a leading "The"
+  Returns a slice of dicts: name, sortKey.
+*/}}
+{{ $names := slice }}
+{{ range .entries }}{{ with index . $.key }}{{ $names = $names | append . }}{{ end }}{{ end }}
+{{ $people := slice }}
+{{ range uniq $names }}
+  {{ $sortKey := . }}
+  {{ if eq $.sort "surname" }}
+    {{ $words := split . " " }}
+    {{ $sortKey = print (index (last 1 $words) 0) " " . }}
+  {{ else }}
+    {{ $sortKey = replaceRE `^(?i)the\s+` "" . }}
+  {{ end }}
+  {{ $people = $people | append (dict "name" . "sortKey" (lower $sortKey)) }}
+{{ end }}
+{{ return sort $people "sortKey" }}
