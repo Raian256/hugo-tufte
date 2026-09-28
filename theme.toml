@@ -1,6 +1,6 @@
 name = "Tufte"
-license = "MIT"
-licenselink = "https://github.com/loikein/hugo-tufte/blob/main/LICENSE.md"
+license = "AGPL-3.0-or-later"
+licenselink = "https://github.com/Raian256/hugo-tufte/blob/main/LICENSE.md"
 description = "A minimalist blog theme using Tufte-css."
 homepage = "https://github.com/loikein/hugo-tufte"
 demo = "https://slashformotion.github.io/hugo-tufte/"

@@ -274,3 +274,9 @@ For usage and examples, refer to [./exampleSite/content/posts/tufte-features.md 
 - `epigraph`
 - `marginnote`
 - `sidenote`
+
+## License
+
+This theme is licensed under the [GNU Affero General Public License v3.0 or later](LICENSE.md). If you distribute a modified version of the theme, or run one on a network where others use it, you must make its source available under the same license. Your site's content is not covered.
+
+The theme is based on earlier versions of hugo-tufte released under the MIT License; their copyright notice is kept in [LICENSE-MIT.md](LICENSE-MIT.md).
