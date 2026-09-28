@@ -1,7 +1,7 @@
 ---
 title: "About This Site"
 hasMath: false
-_build:
+build:
   list: never
 ---
 
