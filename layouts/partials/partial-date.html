@@ -5,7 +5,9 @@
 
   Returns a dict:
     date        for sorting: the first day of the year or month when that's
-                all that's known, so less precise dates sort last
+                all that's known, plus a second per level of precision, so
+                that on the same day "2026-01-01" > "2026-01" > "2026"; less
+                precise dates therefore sort last in their year or month
     datetime    the date as written, for <time datetime="…">
     precision   "year", "month" or "day"
     when        as precisely as known: "5 March 2024", "March 2024", "2024"
@@ -23,9 +25,9 @@
   {{ $r = merge $r (dict "date" $date "precision" "year" "when" $raw "whenInYear" "" "month" $raw "day" "") }}
 {{ else if eq (len $raw) 7 }}
   {{ $date := time.AsTime (print $raw "-01") }}
-  {{ $r = merge $r (dict "date" $date "precision" "month" "when" ($date.Format "January 2006") "whenInYear" ($date.Format "January") "month" ($date.Format "January 2006") "day" "") }}
+  {{ $r = merge $r (dict "date" ($date.Add (time.ParseDuration "1s")) "precision" "month" "when" ($date.Format "January 2006") "whenInYear" ($date.Format "January") "month" ($date.Format "January 2006") "day" "") }}
 {{ else }}
   {{ $date := time.AsTime $raw }}
-  {{ $r = merge $r (dict "date" $date "precision" "day" "when" ($date.Format "2 January 2006") "whenInYear" ($date.Format "2 January") "month" ($date.Format "January 2006") "day" ($date.Format "Monday 2")) }}
+  {{ $r = merge $r (dict "date" ($date.Add (time.ParseDuration "2s")) "precision" "day" "when" ($date.Format "2 January 2006") "whenInYear" ($date.Format "2 January") "month" ($date.Format "January 2006") "day" ($date.Format "Monday 2")) }}
 {{ end }}
 {{ return $r }}
