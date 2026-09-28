@@ -27,7 +27,7 @@
     <div class="diary-entry">
       <p class="diary-head">
         {{ with $e.poster }}
-        <label for="poster-{{ $i }}" class="margin-toggle">&#8853;</label>
+        <label for="poster-{{ $i }}" class="margin-toggle marginnote-ind">&#8853;</label>
         <input type="checkbox" id="poster-{{ $i }}" class="margin-toggle"/>
         <span class="marginnote"><a href="{{ $e.link }}"><img src="{{ .RelPermalink }}" width="90" height="135" alt="Poster for {{ $e.title }}" loading="lazy"></a></span>
         {{ end }}
