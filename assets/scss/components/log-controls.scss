@@ -47,7 +47,8 @@ $log-rule: #d8d4c8;
         margin: 0 0.25em;
     }
 
-    .log-by {
+    .log-by,
+    .log-shelf-tag {
         @include log-text-button;
         font-variant: small-caps;
         letter-spacing: 0.06em;
@@ -105,6 +106,37 @@ $log-rule: #d8d4c8;
     }
 }
 
+// Tags on an entry: shelf marks in the right margin, level with the title.
+.marginnote.log-tags {
+    line-height: 1.5;
+}
+
+.log-tag {
+    @include log-text-button;
+    font-size: 1rem;
+    font-variant: small-caps;
+    letter-spacing: 0.08em;
+
+    & + &::before {
+        content: "·";
+        display: inline-block; // keeps the underline of a chosen tag off the dot
+        margin: 0 0.45em;
+        color: $log-rule;
+    }
+
+    &:hover,
+    &:focus-visible,
+    &.on {
+        color: $log-ink;
+    }
+
+    &.on {
+        text-decoration: underline;
+        text-underline-offset: 0.25em;
+        text-decoration-thickness: 1px;
+    }
+}
+
 .log-none {
     font-style: italic;
     color: $log-faded;
@@ -148,16 +180,9 @@ $log-rule: #d8d4c8;
             padding: 0.15rem 0;
         }
 
-        .diary-meta {
-            margin-left: 0.6em;
-        }
-
-        .stars {
-            margin-right: 0.6em;
-        }
-
-        time {
+        .log-note {
             font-size: 0.85em;
+            margin-left: 0.4em;
         }
     }
 }

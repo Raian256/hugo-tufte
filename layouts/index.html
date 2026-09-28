@@ -69,13 +69,14 @@
     {{ with first 3 (partialCached "books.html" $ "books") }}
     <p class="topic-label">Lately read · <a href="{{ strings.TrimPrefix "/" $shelf | relURL }}">the whole shelf</a></p>
     <ul class="topic-entries">
-      {{ range . }}
+      {{ range $bk := . }}
       <li>
-        <span class="book-title">{{ .title }}</span>, {{ .author }}
+        <span class="book-title">{{ $bk.title }}</span>, {{ $bk.author }}
         <span class="topic-meta">
-          {{- with .stars }}{{ . }} · {{ end -}}
-          <time datetime="{{ .datetime }}">{{ .when }}</time>
-          {{- with .page }} · <a href="{{ .RelPermalink }}">full note</a>{{ end -}}
+          {{- $bk.stars -}}
+          {{- if and $bk.stars $bk.when }} · {{ end -}}
+          {{- with $bk.when }}<time datetime="{{ $bk.datetime }}">{{ . }}</time>{{ end -}}
+          {{- with $bk.page }}{{ if or $bk.stars $bk.when }} · {{ end }}<a href="{{ .RelPermalink }}">full note</a>{{ end -}}
         </span>
       </li>
       {{ end }}

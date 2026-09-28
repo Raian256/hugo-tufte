@@ -6,20 +6,25 @@
   {{ $books := . }}
   {{ $people := partial "log-people.html" (dict "entries" $books "key" "author" "sort" "surname") }}
   <div data-log>
-    {{ partial "log-controls.html" (dict "noun" "books" "person" "author") }}
+    {{ partial "log-controls.html" (dict "noun" "books" "person" "author" "tags" (partial "log-tag-list.html" $books)) }}
 
     <section class="log-view" data-view="date">
-    {{ range partial "log-groups.html" (dict "entries" $books "field" "finished" "format" "2006") }}
+    {{ range partial "log-groups.html" (dict "entries" $books "field" "yearHeading") }}
       <div class="log-group">
         <h2 class="diary-month">{{ .key }}</h2>
         {{ range $b := .items }}
-        <div class="diary-entry log-item" data-rating="{{ $b.rating | default 0 }}">
+        <div class="diary-entry log-item" data-rating="{{ $b.rating | default 0 }}" data-tags="{{ delimit ($b.tags | default slice) "|" }}">
           <p class="diary-head">
-            <span class="diary-title">{{ $b.title }}</span>
-            <span class="book-author">{{ $b.author }}</span>
-            <span class="diary-meta">
-              {{- with $b.stars }}<span class="stars" aria-label="{{ $b.rating }} out of 5">{{ . }}</span>{{ end -}}
-              {{- with $b.whenInYear }}<time datetime="{{ $b.datetime }}">{{ . }}</time>{{ end }}
+            {{ partial "log-tags.html" $b.tags }}
+            <span class="diary-line">
+              <span class="diary-name">
+                <span class="diary-title">{{ $b.title }}</span>
+                <span class="book-author">{{ $b.author }}</span>
+              </span>
+              <span class="diary-meta">
+                <span class="stars"{{ with $b.stars }} aria-label="{{ $b.rating }} out of 5"{{ end }}>{{ $b.stars }}</span>
+                <span class="diary-date">{{ with $b.whenInYear }}<time datetime="{{ $b.datetime }}">{{ . }}</time>{{ end }}</span>
+              </span>
             </span>
           </p>
           {{ with $b.review }}<div class="diary-review">{{ . | markdownify }}</div>{{ end }}

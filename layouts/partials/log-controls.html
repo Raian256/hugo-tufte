@@ -1,10 +1,10 @@
 {{/*
-  The filter line above a book or album log: view by date or by person, and a
-  minimum rating. Hidden until log-filter.js runs, so without JavaScript the
-  page is simply the full list.
-  Usage: partial "log-controls.html" (dict "noun" "books" "person" "author")
+  The filter line above a book or album log: view by date or by person, a
+  minimum rating, and a shelf (tag), shown only when some entry has tags.
+  Driven by log-filter.js.
+  Usage: partial "log-controls.html" (dict "noun" "books" "person" "author" "tags" $tags)
 */}}
-<div class="log-controls" hidden>
+<div class="log-controls">
   <p class="log-controls-line">
     <span class="log-control">
       <span class="log-label">View by</span>
@@ -20,6 +20,16 @@
         {{- end -}}
       </span>
     </span>
+    {{ with .tags }}
+    <span class="log-control log-shelf">
+      <span class="log-label">shelf</span>
+      <button type="button" class="log-shelf-tag" data-tag="" aria-pressed="true">all</button>
+      {{- range . -}}
+      <span class="log-sep" aria-hidden="true">·</span>
+      <button type="button" class="log-shelf-tag" data-tag="{{ . }}" aria-pressed="false">{{ . }}</button>
+      {{- end }}
+    </span>
+    {{ end }}
   </p>
   <p class="log-status" aria-live="polite" data-noun="{{ .noun }}"></p>
 </div>

@@ -34,13 +34,19 @@
         <input type="checkbox" id="poster-{{ $i }}" class="margin-toggle"/>
         <span class="marginnote"><a href="{{ $e.link }}"><img src="{{ .RelPermalink }}" width="90" height="135" alt="Poster for {{ $e.title }}" loading="lazy"></a></span>
         {{ end }}
-        <a class="diary-title" href="{{ $e.link }}">{{ $e.title }}</a>
-        <span class="diary-year">{{ $e.year }}</span>
-        <span class="diary-meta">
-          {{- with $e.stars }}<span class="stars" aria-label="{{ $e.rating }} out of 5">{{ . }}</span>{{ end -}}
-          {{- if $e.liked }} <span class="liked" title="Liked">♥</span>{{ end -}}
-          {{- if $e.rewatch }} <span class="rewatch" title="Rewatch">↻</span>{{ end -}}
-          <time datetime="{{ $e.watched.Format "2006-01-02" }}">{{ $e.watched.Format "Monday 2" }}</time>
+        <span class="diary-line">
+          <span class="diary-name">
+            <a class="diary-title" href="{{ $e.link }}">{{ $e.title }}</a>
+            <span class="diary-year">{{ $e.year }}</span>
+          </span>
+          <span class="diary-meta">
+            <span class="stars"{{ with $e.stars }} aria-label="{{ $e.rating }} out of 5"{{ end }}>{{ $e.stars }}</span>
+            <span class="diary-marks">
+              {{- if $e.liked }}<span class="liked" title="Liked">♥</span>{{ end -}}
+              {{- if $e.rewatch }}<span class="rewatch" title="Rewatch">↻</span>{{ end -}}
+            </span>
+            <span class="diary-date"><time datetime="{{ $e.watched.Format "2006-01-02" }}">{{ $e.watched.Format "Monday 2" }}</time></span>
+          </span>
         </span>
       </p>
       {{ with $e.review }}<div class="diary-review">{{ . | safeHTML }}</div>{{ end }}

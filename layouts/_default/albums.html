@@ -6,7 +6,7 @@
   {{ $albums := . }}
   {{ $people := partial "log-people.html" (dict "entries" $albums "key" "artist" "sort" "name") }}
   <div data-log>
-    {{ partial "log-controls.html" (dict "noun" "albums" "person" "artist") }}
+    {{ partial "log-controls.html" (dict "noun" "albums" "person" "artist" "tags" (partial "log-tag-list.html" $albums)) }}
 
     <section class="log-view" data-view="date">
     {{ range partial "log-groups.html" (dict "entries" $albums "field" "month") }}
@@ -14,19 +14,24 @@
         <h2 class="diary-month">{{ .key }}</h2>
         {{ range $a := .items }}
         {{ $id := printf "cover-%s" (substr (md5 (print $a.title $a.artist $a.datetime)) 0 10) }}
-        <div class="diary-entry log-item" data-rating="{{ $a.rating | default 0 }}">
+        <div class="diary-entry log-item" data-rating="{{ $a.rating | default 0 }}" data-tags="{{ delimit ($a.tags | default slice) "|" }}">
           <p class="diary-head">
             {{ with $a.cover }}
             <label for="{{ $id }}" class="margin-toggle marginnote-ind">&#8853;</label>
             <input type="checkbox" id="{{ $id }}" class="margin-toggle"/>
             <span class="marginnote"><img src="{{ .RelPermalink }}" width="90" height="90" alt="Cover of {{ $a.title }}" loading="lazy"></span>
             {{ end }}
-            <span class="diary-title">{{ $a.title }}</span>
-            <span class="album-artist">{{ $a.artist }}</span>
-            {{ with $a.year }}<span class="diary-year">{{ . }}</span>{{ end }}
-            <span class="diary-meta">
-              {{- with $a.stars }}<span class="stars" aria-label="{{ $a.rating }} out of 5">{{ . }}</span>{{ end -}}
-              {{- with $a.day }}<time datetime="{{ $a.datetime }}">{{ . }}</time>{{ end }}
+            {{ partial "log-tags.html" $a.tags }}
+            <span class="diary-line">
+              <span class="diary-name">
+                <span class="diary-title">{{ $a.title }}</span>
+                <span class="album-artist">{{ $a.artist }}</span>
+                {{ with $a.year }}<span class="diary-year">{{ . }}</span>{{ end }}
+              </span>
+              <span class="diary-meta">
+                <span class="stars"{{ with $a.stars }} aria-label="{{ $a.rating }} out of 5"{{ end }}>{{ $a.stars }}</span>
+                <span class="diary-date">{{ with $a.day }}<time datetime="{{ $a.datetime }}">{{ . }}</time>{{ end }}</span>
+              </span>
             </span>
           </p>
           {{ with $a.review }}<div class="diary-review">{{ . | markdownify }}</div>{{ end }}

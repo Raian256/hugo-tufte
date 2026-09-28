@@ -17,12 +17,17 @@
     </h2>
     <ul class="log-works">
       {{ range $w := $works }}
-      <li class="log-item" data-rating="{{ $w.rating | default 0 }}">
-        <span class="diary-title">{{ $w.title }}</span>
-        <span class="diary-meta">
-          {{- with $w.stars }}<span class="stars" aria-label="{{ $w.rating }} out of 5">{{ . }}</span>{{ end -}}
-          <time datetime="{{ $w.datetime }}">{{ $w.when }}</time>
-          {{- with $w.page }} · <a href="{{ .RelPermalink }}">full note</a>{{ end -}}
+      <li class="log-item" data-rating="{{ $w.rating | default 0 }}" data-tags="{{ delimit ($w.tags | default slice) "|" }}">
+        {{ partial "log-tags.html" $w.tags }}
+        <span class="diary-line">
+          <span class="diary-name">
+            <span class="diary-title">{{ $w.title }}</span>
+            {{- with $w.page }} <a class="log-note" href="{{ .RelPermalink }}">full note</a>{{ end }}
+          </span>
+          <span class="diary-meta">
+            <span class="stars"{{ with $w.stars }} aria-label="{{ $w.rating }} out of 5"{{ end }}>{{ $w.stars }}</span>
+            <span class="diary-date">{{ with $w.when }}<time datetime="{{ $w.datetime }}">{{ . }}</time>{{ end }}</span>
+          </span>
         </span>
       </li>
       {{ end }}

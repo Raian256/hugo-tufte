@@ -1,24 +1,29 @@
 // Filtering for the book and album logs (layouts "books" and "albums").
 // The page renders every entry twice, by date and by person; this shows one
-// view, hides entries below the minimum rating, hides headings left empty, and
-// keeps the choice in the URL (?by=person&min=4).
+// view, hides entries below the minimum rating or off the chosen shelf (tag),
+// hides headings left empty, and keeps the choice in the URL
+// (?by=person&min=4&tag=mathematics).
 (function () {
   var root = document.querySelector("[data-log]");
   if (!root) return;
 
-  var controls = root.querySelector(".log-controls");
   var status = root.querySelector(".log-status");
   var none = root.querySelector(".log-none");
   var byButtons = root.querySelectorAll(".log-by");
   var stars = root.querySelectorAll(".log-stars button");
   var views = root.querySelectorAll(".log-view");
+  var shelf = root.querySelectorAll(".log-shelf-tag");
+  var tagLinks = root.querySelectorAll(".log-tag");
+  var known = Array.prototype.map.call(shelf, function (b) { return b.dataset.tag; });
   var noun = status.dataset.noun;
 
   var params = new URLSearchParams(location.search);
   var state = {
     by: params.get("by") === "person" ? "person" : "date",
     min: Math.min(5, Math.max(0, parseInt(params.get("min"), 10) || 0)),
+    tag: params.get("tag") || "",
   };
+  if (known.indexOf(state.tag) < 0) state.tag = "";
 
   function apply() {
     var shown = 0, total = 0;
@@ -26,7 +31,8 @@
       var active = view.dataset.view === state.by;
       view.hidden = !active;
       view.querySelectorAll(".log-item").forEach(function (item) {
-        var ok = parseFloat(item.dataset.rating) >= state.min;
+        var ok = parseFloat(item.dataset.rating) >= state.min &&
+          (!state.tag || item.dataset.tags.split("|").indexOf(state.tag) >= 0);
         item.hidden = !ok;
         if (active) { total++; if (ok) shown++; }
       });
@@ -42,12 +48,16 @@
       s.setAttribute("aria-pressed", String(n === state.min));
     });
 
-    status.textContent = state.min > 0 ? "Showing " + shown + " of " + total + " " + noun + "." : "";
+    shelf.forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.tag === state.tag)); });
+    tagLinks.forEach(function (a) { a.classList.toggle("on", a.dataset.tag === state.tag); });
+
+    status.textContent = state.min > 0 || state.tag ? "Showing " + shown + " of " + total + " " + noun + "." : "";
     none.hidden = shown > 0;
 
     var query = new URLSearchParams();
     if (state.by !== "date") query.set("by", state.by);
     if (state.min) query.set("min", state.min);
+    if (state.tag) query.set("tag", state.tag);
     var search = query.toString();
     history.replaceState(null, "", location.pathname + (search ? "?" + search : "") + location.hash);
   }
@@ -62,10 +72,18 @@
       apply();
     });
   });
+  shelf.forEach(function (b) {
+    b.addEventListener("click", function () { state.tag = b.dataset.tag; apply(); });
+  });
+  tagLinks.forEach(function (a) {
+    a.addEventListener("click", function () {
+      state.tag = state.tag === a.dataset.tag ? "" : a.dataset.tag; // clicking the chosen tag clears it
+      apply();
+    });
+  });
   root.querySelector(".log-clear").addEventListener("click", function () {
-    state.min = 0; apply();
+    state.min = 0; state.tag = ""; apply();
   });
 
-  controls.hidden = false;
   apply();
 })();

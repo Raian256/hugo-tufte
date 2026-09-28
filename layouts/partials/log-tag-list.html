@@ -1,0 +1,4 @@
+{{/* All tags used in a log's entries, alphabetically. Usage: partial "log-tag-list.html" $entries */}}
+{{ $tags := slice }}
+{{ range . }}{{ range .tags }}{{ $tags = $tags | append . }}{{ end }}{{ end }}
+{{ return sort (uniq $tags) }}

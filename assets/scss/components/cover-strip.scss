@@ -25,9 +25,10 @@
         font-size: 1rem;
         line-height: 1.3;
         padding: 0;
+        min-width: 0; // lets long titles shrink to an ellipsis
     }
 
-    a,
+    li > a,
     .cover-strip-item {
         display: block;
         text-decoration: none;
@@ -45,8 +46,8 @@
         margin-bottom: 0.4rem;
     }
 
-    a:hover .cover-strip-title,
-    a:focus-visible .cover-strip-title {
+    li > a:hover .cover-strip-title,
+    li > a:focus-visible .cover-strip-title {
         text-decoration: underline;
     }
 
@@ -61,8 +62,20 @@
         color: #6f6a5f;
     }
 
+    // One line each, so every caption has the same height and the stars line
+    // up. Titles and names are cut with "…" (the full title is in the tooltip);
+    // the rating never is, and is set a little smaller to fit a poster's width.
+    .cover-strip-title,
+    .cover-strip-byline {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
     .cover-strip-meta {
-        letter-spacing: 0.05em;
+        white-space: nowrap;
+        font-size: 0.85rem;
+        letter-spacing: -0.02em;
     }
 }
 

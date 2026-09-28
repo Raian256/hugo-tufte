@@ -154,6 +154,7 @@ A page listing the books you have read, grouped by year, newest first. Each entr
    finished = "2026-09-20"            # required: YYYY-MM-DD, or YYYY-MM / YYYY if that's all you remember
    rating = 4.5                       # optional, 0.5 to 5, halves allowed
    review = "Short and *unresolved*." # optional, Markdown allowed
+   tags = ["philosophy"]              # optional, shelves to filter by
    post = "posts/euthyphro"           # optional, path under content/
    ```
 
@@ -186,8 +187,9 @@ The reading log and album log pages open with a line of controls:
 
 - **View by** *date* (grouped by year or month) or by *author* / *artist*: an index of people, which is also how to see one person's works in order, sorted by surname for authors and by name for artists (ignoring a leading "The"), each with a count and mean rating, then their works, newest first.
 - **Rated at least** one to five stars. Click a star to set the threshold, and click it again to clear it. Unrated entries are hidden while it's set.
+- **Shelf**: *all* or one tag, when your entries have tags. Tags also appear after each entry in small caps; clicking one picks that shelf, and clicking it again clears it.
 
-Filters apply to both views, headings left empty are hidden, and a line says how many entries are shown. The choice is kept in the address (`/books/?by=person&min=4`), so a filtered view can be linked to. This is the theme's only JavaScript besides KaTeX: a small script loaded on these two pages. Without it, the controls don't appear and the full list is shown.
+Filters apply to both views, headings left empty are hidden, and a line says how many entries are shown. The choice is kept in the address (`/books/?by=person&min=4&tag=mathematics`), so a filtered view can be linked to. A small script, loaded only on these two pages, does the filtering.
 
 ### Album log
 
