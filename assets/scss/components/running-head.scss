@@ -1,0 +1,58 @@
+/* ------------------------------------------------------------------------ */
+/* Running head: site title + nav at the top of inner pages. */
+/* ------------------------------------------------------------------------ */
+
+.running-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.4rem 1.6rem;
+    width: 75%;
+    max-width: 45rem;
+    padding: 2.4rem 0 0.6rem;
+    border-bottom: 1px solid #111;
+    font-variant: small-caps;
+    letter-spacing: 0.08em;
+
+    a {
+        text-decoration: none;
+        background: none;
+        text-shadow: none;
+        color: #6f6a5f;
+    }
+
+    a:hover,
+    a:focus-visible,
+    a[aria-current="page"] {
+        color: #111;
+    }
+
+    .running-head-home {
+        font-size: 1.5rem;
+        color: #111;
+    }
+
+    ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0 1.2rem;
+        list-style: none;
+        width: auto;
+        margin: 0;
+        padding: 0;
+    }
+
+    li {
+        font-size: 1.2rem;
+        margin: 0;
+        padding: 0;
+    }
+}
+
+@media (max-width: 760px) {
+    .running-head {
+        width: 100%;
+        padding-top: 1.4rem;
+    }
+}

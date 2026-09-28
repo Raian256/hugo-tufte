@@ -4,9 +4,10 @@
   <script>{{ . | safeJS }}</script>
 {{ end }}
 
-<link rel="stylesheet" href="{{ .Site.Params.KaTeXCDN }}/katex@{{ .Site.Params.KaTeXVersion }}/dist/katex.min.css" crossorigin="anonymous">
-<script defer src="{{ .Site.Params.KaTeXCDN }}/katex@{{ .Site.Params.KaTeXVersion }}/dist/katex.min.js" crossorigin="anonymous"></script>
-<script defer src="{{ .Site.Params.KaTeXCDN }}/katex@{{ .Site.Params.KaTeXVersion }}/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+{{ $katex := printf "%s/katex@%s" (site.Params.KaTeXCDN | default "https://cdn.jsdelivr.net/npm") (site.Params.KaTeXVersion | default "0.16.22") }}
+<link rel="stylesheet" href="{{ $katex }}/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="{{ $katex }}/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="{{ $katex }}/dist/contrib/auto-render.min.js" crossorigin="anonymous"></script>
 <!-- do not add onload attributes, breaks settings below -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {

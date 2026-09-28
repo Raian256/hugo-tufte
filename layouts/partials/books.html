@@ -1,0 +1,18 @@
+{{/*
+  Reads data/books.toml and returns its entries newest first, with `finished`
+  parsed as a date, `stars` rendered, and `post` resolved to a published page
+  (or nil if it doesn't exist or is still a draft).
+*/}}
+{{ $books := slice }}
+{{ range hugo.Data.books.books }}
+  {{ $post := "" }}
+  {{ with .post }}
+    {{ with site.GetPage . }}{{ $post = . }}{{ else }}{{ warnf "books: no published page at %q" . }}{{ end }}
+  {{ end }}
+  {{ $books = $books | append (merge . (dict
+    "finished" (time.AsTime .finished)
+    "stars" (partial "stars.html" .rating)
+    "page" $post
+  )) }}
+{{ end }}
+{{ return sort $books "finished" "desc" }}

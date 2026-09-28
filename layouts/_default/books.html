@@ -1,0 +1,33 @@
+{{ define "main" }}
+<article id="main" class="diary books">
+  {{ if not site.Params.hideRunningHead }}{{ partial "running-head.html" . }}{{ end }}
+  {{ partial "content.header.html" . }}
+  {{ with partialCached "books.html" . "books" }}
+  <section>
+  {{ $year := "" }}
+  {{ range $b := . }}
+    {{ $y := .finished.Format "2006" }}
+    {{ if ne $y $year }}
+      <h2 class="diary-month">{{ $y }}</h2>
+      {{ $year = $y }}
+    {{ end }}
+    <div class="diary-entry">
+      <p class="diary-head">
+        <span class="diary-title">{{ .title }}</span>
+        <span class="book-author">{{ .author }}</span>
+        <span class="diary-meta">
+          {{- with .stars }}<span class="stars" aria-label="{{ $b.rating }} out of 5">{{ . }}</span>{{ end -}}
+          <time datetime="{{ .finished.Format "2006-01-02" }}">{{ .finished.Format "2 January" }}</time>
+        </span>
+      </p>
+      {{ with .review }}<div class="diary-review">{{ . | markdownify }}</div>{{ end }}
+      {{ with .page }}<p class="book-post"><a href="{{ .RelPermalink }}">Read the full note: {{ .Title }}</a></p>{{ end }}
+    </div>
+  {{ end }}
+  </section>
+  {{ else }}
+  <section><p class="diary-empty">The shelf is empty for now.</p></section>
+  {{ end }}
+  <section>{{ partial "footer.html" . }}</section>
+</article>
+{{ end }}

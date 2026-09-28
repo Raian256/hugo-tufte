@@ -6,6 +6,7 @@
 
 /// Pages
 @import "pages/footer";
+@import "pages/diary";
 
 /// Components
 @import "components/code-highlight";
@@ -13,6 +14,8 @@
 @import "components/nav";
 @import "components/brand";
 @import "components/meta";
+@import "components/running-head";
+@import "components/letterboxd-strip";
 
 // Look at this https://gohugo.io/hugo-pipes/resource-from-template/#readout
 {{ if and (isset .Site.Params "codeblocksdark") .Site.Params.codeBlocksDark  }}

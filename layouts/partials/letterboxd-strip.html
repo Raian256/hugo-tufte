@@ -1,0 +1,23 @@
+{{/*
+  A row of recent Letterboxd posters, e.g. for a home page.
+  Usage: {{ partial "letterboxd-strip.html" (dict "count" 6 "diary" "/films/") }}
+    count  how many films to show (default 6)
+    diary  optional URL of your full diary page (a page with layout = "letterboxd")
+*/}}
+{{ $count := .count | default 6 }}
+{{ with first $count (partialCached "letterboxd.html" . "letterboxd") }}
+<div class="letterboxd-strip">
+  <p class="letterboxd-strip-label">Lately watched{{ with $.diary }} · <a href="{{ . | relURL }}">the full diary</a>{{ end }}</p>
+  <ol>
+    {{ range . }}
+    <li>
+      <a href="{{ .link }}" title="{{ .title }} ({{ .year }}), watched {{ .watched.Format "2 January" }}">
+        {{ with .poster }}<img src="{{ .RelPermalink }}" width="90" height="135" alt="" loading="lazy">{{ end }}
+        <span class="letterboxd-strip-title">{{ .title }}</span>
+        <span class="letterboxd-strip-meta">{{ .stars }}{{ if .liked }} <span class="liked" aria-label="liked">♥</span>{{ end }}</span>
+      </a>
+    </li>
+    {{ end }}
+  </ol>
+</div>
+{{ end }}

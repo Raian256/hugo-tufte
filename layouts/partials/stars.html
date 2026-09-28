@@ -1,0 +1,8 @@
+{{/* Renders a 0.5–5 rating as stars, e.g. 4.5 → ★★★★½. Returns "" for no rating. */}}
+{{ $stars := "" }}
+{{ with . }}
+  {{ $r := float . }}
+  {{ $stars = strings.Repeat (int (math.Floor $r)) "★" }}
+  {{ if ne $r (math.Floor $r) }}{{ $stars = print $stars "½" }}{{ end }}
+{{ end }}
+{{ return $stars }}

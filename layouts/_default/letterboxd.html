@@ -1,0 +1,58 @@
+{{ define "main" }}
+<article id="main" class="diary">
+  {{ if not site.Params.hideRunningHead }}{{ partial "running-head.html" . }}{{ end }}
+  {{ partial "content.header.html" . }}
+  {{ $entries := partialCached "letterboxd.html" . "letterboxd" }}
+  {{ with $entries }}
+  {{ $rated := where . "rating" "gt" 0 }}
+  {{ $mean := 0.0 }}
+  {{ with $rated }}{{ range . }}{{ $mean = add $mean .rating }}{{ end }}{{ $mean = div $mean (len .) }}{{ end }}
+  <section>
+    <p class="diary-summary">
+      {{ len . }} films since {{ (index (last 1 .) 0).watched.Format "2 January 2006" }}
+      · {{ len (where . "review" "ne" "") }} reviewed
+      · {{ len (where . "liked" true) }} liked
+      {{ with $rated }}· mean rating {{ lang.FormatNumber 1 $mean }}&#8201;★{{ end }}
+    </p>
+  </section>
+
+  <section>
+  {{ $month := "" }}
+  {{ range $i, $e := . }}
+    {{ $m := $e.watched.Format "January 2006" }}
+    {{ if ne $m $month }}
+      <h2 class="diary-month">{{ $m }}</h2>
+      {{ $month = $m }}
+    {{ end }}
+    <div class="diary-entry">
+      <p class="diary-head">
+        {{ with $e.poster }}
+        <label for="poster-{{ $i }}" class="margin-toggle">&#8853;</label>
+        <input type="checkbox" id="poster-{{ $i }}" class="margin-toggle"/>
+        <span class="marginnote"><a href="{{ $e.link }}"><img src="{{ .RelPermalink }}" width="90" height="135" alt="Poster for {{ $e.title }}" loading="lazy"></a></span>
+        {{ end }}
+        <a class="diary-title" href="{{ $e.link }}">{{ $e.title }}</a>
+        <span class="diary-year">{{ $e.year }}</span>
+        <span class="diary-meta">
+          {{- with $e.stars }}<span class="stars" aria-label="{{ $e.rating }} out of 5">{{ . }}</span>{{ end -}}
+          {{- if $e.liked }} <span class="liked" title="Liked">♥</span>{{ end -}}
+          {{- if $e.rewatch }} <span class="rewatch" title="Rewatch">↻</span>{{ end -}}
+          <time datetime="{{ $e.watched.Format "2006-01-02" }}">{{ $e.watched.Format "Monday 2" }}</time>
+        </span>
+      </p>
+      {{ with $e.review }}<div class="diary-review">{{ . | safeHTML }}</div>{{ end }}
+    </div>
+  {{ end }}
+  </section>
+  {{ else }}
+  <section>
+    {{ with site.Params.letterboxd }}
+    <p>The diary couldn't be loaded this time. It's on <a href="https://letterboxd.com/{{ . }}/">Letterboxd</a> in the meantime.</p>
+    {{ else }}
+    <p>No Letterboxd username is set.</p>
+    {{ end }}
+  </section>
+  {{ end }}
+  <section>{{ partial "footer.html" . }}</section>
+</article>
+{{ end }}

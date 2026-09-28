@@ -6,10 +6,11 @@
 
 {{ define "main" }}
 <article id="main">
+  {{ if not site.Params.hideRunningHead }}{{ partial "running-head.html" . }}{{ end }}
   {{ partial "content.header.html" . }}
   {{ partial "toc.html" . }}
   <section>{{ .Content }}</section>
   <section>{{ partial "footer.html" . }}</section>
-  <section>{{ partial "nav.html" . }}</section>
+  {{ if site.Params.hideRunningHead }}<section>{{ partial "nav.html" . }}</section>{{ end }}
 </article>
 {{ end }}

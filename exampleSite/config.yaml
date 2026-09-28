@@ -44,8 +44,13 @@ params:
   showSummary: true
   # Site wide kill switch for LaTeX support
   math: true
-  KaTeXVersion: 0.16.4
-  KaTeXCDN: "//cdn.jsdelivr.net/npm"
+  # KaTeX version and CDN (these are the defaults, so both can be omitted)
+  KaTeXVersion: 0.16.22
+  KaTeXCDN: "https://cdn.jsdelivr.net/npm"
+  # Hide the site title + menu shown at the top of inner pages
+  hideRunningHead: false
+  # Your Letterboxd username, for layout "letterboxd" and partial "letterboxd-strip.html"
+  # letterboxd: <your_username>
   # #### Control style flavours of the website
   # Use upright & sans-serif font for subtitles
   sansSubtitle: false
@@ -94,6 +99,10 @@ menu:
       weight: -90
       identifier: categories
       url: /categories/
+    - name: Books
+      weight: -85
+      identifier: books
+      url: /books/
     - name: About
       weight: -80
       identifier: about

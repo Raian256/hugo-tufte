@@ -1,0 +1,80 @@
+/* ------------------------------------------------------------------------ */
+/* Diary-style pages: layout = "letterboxd" and layout = "books". */
+/* ------------------------------------------------------------------------ */
+
+.diary {
+    .diary-summary {
+        font-family: "et-book-roman-old-style", "et-book", serif;
+        font-style: italic;
+        color: #6f6a5f;
+    }
+
+    h2.diary-month {
+        margin-top: 3.2rem;
+        font-style: italic;
+    }
+
+    .diary-entry {
+        margin-bottom: 1.8rem;
+    }
+
+    .diary-head {
+        margin-bottom: 0.2rem;
+    }
+
+    .diary-head .marginnote img {
+        width: 90px;
+        height: auto;
+        box-shadow: 0 1px 2px rgba(17, 17, 17, 0.25);
+    }
+
+    .diary-head .marginnote a {
+        background: none;
+        text-shadow: none;
+    }
+
+    .diary-title {
+        font-style: italic;
+    }
+
+    .diary-year,
+    .diary-meta {
+        font-family: "et-book-roman-old-style", "et-book", serif;
+        color: #6f6a5f;
+    }
+
+    .diary-meta time {
+        margin-left: 0.6em;
+        font-size: 0.85em;
+    }
+
+    .diary-review p {
+        font-size: 1.3rem;
+        margin-top: 0.3rem;
+    }
+
+    .diary-empty {
+        font-style: italic;
+        color: #6f6a5f;
+    }
+}
+
+.books {
+    .book-author {
+        margin-left: 0.3em;
+    }
+
+    .book-author::before {
+        content: "by ";
+        color: #6f6a5f;
+    }
+
+    .diary-meta .stars {
+        margin-left: 0.6em;
+    }
+
+    .book-post {
+        font-size: 1.2rem;
+        margin-top: 0.2rem;
+    }
+}
