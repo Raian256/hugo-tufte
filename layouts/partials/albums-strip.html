@@ -1,0 +1,20 @@
+{{/*
+  A row of recently logged album covers, e.g. for a home page.
+  Usage: {{ partial "albums-strip.html" (dict "count" 6 "log" "/albums/") }}
+    count  how many albums to show (default 6)
+    log    optional URL of your album log page (a page with layout = "albums")
+*/}}
+{{ $items := slice }}
+{{ range first (.count | default 6) (partialCached "albums.html" . "albums") }}
+  {{ $link := "" }}
+  {{ with .page }}{{ $link = .RelPermalink }}{{ else }}{{ with $.log }}{{ $link = relURL . }}{{ end }}{{ end }}
+  {{ $items = $items | append (dict
+    "image" .cover
+    "link" $link
+    "tooltip" (printf "%s, %s" .title .artist)
+    "title" .title
+    "byline" .artist
+    "meta" .stars
+  ) }}
+{{ end }}
+{{ partial "cover-strip.html" (dict "items" $items "label" "Lately listened" "more" .log "moreText" "the whole log" "shape" "square") }}

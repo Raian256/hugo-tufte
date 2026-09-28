@@ -61,7 +61,7 @@
       {{ end }}
     </ul>
     {{ else }}
-    {{ if not (or $topic.books $topic.diary) }}<p class="topic-empty">Forthcoming.</p>{{ end }}
+    {{ if not (or $topic.books $topic.diary $topic.albums) }}<p class="topic-empty">Forthcoming.</p>{{ end }}
     {{ end }}
 
     {{ with $topic.books }}
@@ -82,6 +82,8 @@
     </ul>
     {{ end }}
     {{ end }}
+
+    {{ with $topic.albums }}{{ partial "albums-strip.html" (dict "count" 6 "log" .) }}{{ end }}
 
     {{ with $topic.diary }}{{ partial "letterboxd-strip.html" (dict "count" 6 "diary" .) }}{{ end }}
   </div>

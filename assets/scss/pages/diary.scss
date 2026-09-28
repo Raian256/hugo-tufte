@@ -53,6 +53,11 @@
         margin-top: 0.3rem;
     }
 
+    .diary-post {
+        font-size: 1.2rem;
+        margin-top: 0.2rem;
+    }
+
     .diary-empty {
         font-style: italic;
         color: #6f6a5f;
@@ -73,8 +78,32 @@
         margin-left: 0.6em;
     }
 
-    .book-post {
-        font-size: 1.2rem;
-        margin-top: 0.2rem;
+}
+
+.albums {
+    .album-artist {
+        margin-left: 0.3em;
     }
+
+    .album-artist::before {
+        content: "— ";
+        color: #6f6a5f;
+    }
+
+    .diary-year {
+        margin-left: 0.4em;
+    }
+
+    .diary-meta .stars {
+        margin-left: 0.6em;
+    }
+
+    .diary-head .marginnote img {
+        height: 90px;
+    }
+}
+
+.diary .diary-more {
+    font-size: 1.2rem;
+    color: #6f6a5f;
 }

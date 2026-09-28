@@ -1,51 +1,27 @@
 {{/*
-  Fetches the Letterboxd RSS feed at build time and returns a slice of entries,
-  newest first. Returns an empty slice if the feed can't be fetched, so the
-  site still builds offline. Posters are downloaded and resized locally.
-  Needs `params.letterboxd` (your Letterboxd username).
+  Returns your Letterboxd diary entries, most recently watched first, with
+  `watched` parsed as a date, `stars` rendered, and `poster` as a resized image
+  resource (or nil).
+
+  Nothing is downloaded here. Entries and posters come from files saved by
+  scripts/sync-letterboxd.py: data/letterboxd.json and assets/posters/.
 */}}
 {{ $entries := slice }}
-{{ with site.Params.letterboxd }}
-{{ $url := printf "https://letterboxd.com/%s/rss/" . }}
-{{ with try (resources.GetRemote $url) }}
-  {{ with .Err }}
-    {{ warnf "letterboxd: could not fetch %s: %s" $url . }}
-  {{ else with .Value }}
-    {{ $items := (. | transform.Unmarshal).channel.item }}
-    {{ if reflect.IsMap $items }}{{ $items = slice $items }}{{ end }}
-    {{ range $items }}
-      {{ if not .filmTitle }}{{ continue }}{{ end }}
-
-      {{ $rating := float (.memberRating | default 0) }}
-      {{ $stars := partial "stars.html" $rating }}
-
-      {{ $poster := "" }}
-      {{ with index (findRESubmatch `<img src="([^"]+)"` .description 1) 0 }}
-        {{ with try (resources.GetRemote (index . 1)) }}
-          {{ with .Value }}{{ $poster = .Fill "180x270 webp q80" }}{{ end }}
-        {{ end }}
-      {{ end }}
-
-      {{ $isReview := hasPrefix (index .guid "#text") "letterboxd-review" }}
-      {{ $review := "" }}
-      {{ if $isReview }}
-        {{ $review = .description | replaceRE `<p>\s*<img[^>]*>\s*</p>` "" | strings.TrimSpace }}
-      {{ end }}
-
-      {{ $entries = $entries | append (dict
-        "title" .filmTitle
-        "year" .filmYear
-        "link" .link
-        "watched" (time.AsTime (.watchedDate | default .pubDate))
-        "rating" $rating
-        "stars" $stars
-        "liked" (eq .memberLike "Yes")
-        "rewatch" (eq .rewatch "Yes")
-        "poster" $poster
-        "review" $review
-      ) }}
+{{ with hugo.Data.letterboxd }}
+  {{ range .entries }}
+    {{ $poster := "" }}
+    {{ with .poster }}
+      {{ with resources.GetMatch (printf "posters/%s.*" .) }}{{ $poster = .Fill "180x270 webp q80" }}{{ end }}
     {{ end }}
+    {{ $entries = $entries | append (merge . (dict
+      "watched" (time.AsTime .watched)
+      "stars" (partial "stars.html" .rating)
+      "poster" $poster
+    )) }}
   {{ end }}
-{{ end }}
+{{ else }}
+  {{ with site.Params.letterboxd }}
+    {{ warnf "letterboxd: no saved diary; run `python3 themes/hugo-tufte/scripts/sync-letterboxd.py` from the site root" }}
+  {{ end }}
 {{ end }}
 {{ return sort $entries "watched" "desc" }}

@@ -14,6 +14,9 @@
       · {{ len (where . "liked" true) }} liked
       {{ with $rated }}· mean rating {{ lang.FormatNumber 1 $mean }}&#8201;★{{ end }}
     </p>
+    {{ with site.Params.letterboxd | default hugo.Data.letterboxd.user }}
+    <p class="diary-more">Only my latest entries are kept here. The full diary is on <a href="https://letterboxd.com/{{ . }}/films/diary/">Letterboxd</a>.</p>
+    {{ end }}
   </section>
 
   <section>
@@ -45,13 +48,7 @@
   {{ end }}
   </section>
   {{ else }}
-  <section>
-    {{ with site.Params.letterboxd }}
-    <p>The diary couldn't be loaded this time. It's on <a href="https://letterboxd.com/{{ . }}/">Letterboxd</a> in the meantime.</p>
-    {{ else }}
-    <p>No Letterboxd username is set.</p>
-    {{ end }}
-  </section>
+  <section><p class="diary-empty">Nothing logged yet.</p></section>
   {{ end }}
   <section>{{ partial "footer.html" . }}</section>
 </article>

@@ -1,9 +1,10 @@
 /* ------------------------------------------------------------------------ */
-/* Letterboxd poster strip (partial "letterboxd-strip.html"). */
+/* Cover strip: a row of film posters or album covers                       */
+/* (partials "letterboxd-strip.html" and "albums-strip.html").              */
 /* ------------------------------------------------------------------------ */
 
-.letterboxd-strip {
-    .letterboxd-strip-label {
+.cover-strip {
+    .cover-strip-label {
         margin: 1.4rem 0 0.6rem;
         font-size: 1.1rem;
         font-style: italic;
@@ -26,7 +27,8 @@
         padding: 0;
     }
 
-    a {
+    a,
+    .cover-strip-item {
         display: block;
         text-decoration: none;
         background: none;
@@ -38,27 +40,38 @@
         display: block;
         width: 100%;
         height: auto;
-        aspect-ratio: 2 / 3;
         object-fit: cover;
         box-shadow: 0 1px 2px rgba(17, 17, 17, 0.25);
         margin-bottom: 0.4rem;
     }
 
-    a:hover .letterboxd-strip-title,
-    a:focus-visible .letterboxd-strip-title {
+    a:hover .cover-strip-title,
+    a:focus-visible .cover-strip-title {
         text-decoration: underline;
     }
 
-    .letterboxd-strip-title {
+    .cover-strip-title {
         display: block;
         font-style: italic;
     }
 
-    .letterboxd-strip-meta {
+    .cover-strip-byline,
+    .cover-strip-meta {
         display: block;
         color: #6f6a5f;
+    }
+
+    .cover-strip-meta {
         letter-spacing: 0.05em;
     }
+}
+
+.cover-strip--portrait img {
+    aspect-ratio: 2 / 3;
+}
+
+.cover-strip--square img {
+    aspect-ratio: 1;
 }
 
 .liked {
@@ -66,7 +79,7 @@
 }
 
 @media (max-width: 760px) {
-    .letterboxd-strip ol {
+    .cover-strip ol {
         width: 100%;
     }
 }

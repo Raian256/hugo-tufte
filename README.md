@@ -9,7 +9,8 @@ This fork is meant for a **personal site** rather than a plain blog. It is somew
 - **A home page like a book's opening.** A motto, a few lines about you, then your posts gathered under topic headings, each with a gloss in the margin.
 - **Essays with margins.** Sidenotes, margin notes, epigraphs and KaTeX math, as in Tufte's own books.
 - **A reading log.** Books you have finished, with ratings, a line or two of review, and a link to the full essay when there is one, all kept in a single data file.
-- **A film diary.** Your [Letterboxd](https://letterboxd.com/) diary pulled in at build time: posters, ratings, likes and reviews, with the posters served from your own site.
+- **An album log.** The same for records: ratings, short reviews and links to posts, with covers fetched from the open [Cover Art Archive](https://coverartarchive.org/).
+- **A film diary.** Your [Letterboxd](https://letterboxd.com/) diary saved into your site: your latest films with posters, ratings, likes and reviews, and a link to the full diary on Letterboxd.
 - **A way home.** A small running head on every inner page, with the site title and menu, like the header on a book's page.
 
 The theme holds everything that isn't yours: layouts, styles, fonts, the post archetype. Your site holds only content (posts, `content/_index.md`, `data/books.toml`) and configuration (the motto, topics, menus, usernames). To make a site like the author's with your own writing, you shouldn't need a single template of your own.
@@ -27,7 +28,7 @@ Hugo-Tufte has changed hands a few times:
 
 ### Prerequisite: Hugo Extended
 
-You'll need Hugo **Extended**, since this theme uses SCSS. The reading log and film diary need version **0.156 or newer**.
+You'll need Hugo **Extended**, since this theme uses SCSS. The reading log, album log and film diary need version **0.156 or newer**, and their sync scripts need Python 3.
 
 - On Windows, with [Chocolatey](https://chocolatey.org/):
   ```shell
@@ -54,6 +55,7 @@ The showcase pages are:
 - `The big old test page`
 - `Tufte CSS`
 - `Books`, the reading log
+- `Albums`, the album log
 - The home page itself, configured under `params.home` in `exampleSite/config.yaml`
 
 ### For a new site
@@ -81,7 +83,7 @@ The home page is, top to bottom:
 1. The site title and menu.
 2. A **motto** in large type, with an optional gloss in the margin.
 3. An **intro**: the body of your `content/_index.md`.
-4. **Topics**: one heading per topic, each listing the newest posts in the matching category, with the topic's gloss in the margin. A topic can also show your latest books or Letterboxd posters. An empty topic reads "Forthcoming."
+4. **Topics**: one heading per topic, each listing the newest posts in the matching category, with the topic's gloss in the margin. A topic can also show your latest books, album covers or Letterboxd posters. An empty topic reads "Forthcoming."
 
 Everything is configured under `params.home`, and every part is optional:
 
@@ -105,12 +107,17 @@ Everything is configured under `params.home`, and every part is optional:
   books = "/books/"          # also show the 3 latest books, linking to this page
 
   [[params.home.topics]]
+  key = "music"
+  name = "Musica"
+  albums = "/albums/"        # also show recent album covers, linking to this page
+
+  [[params.home.topics]]
   key = "film"
   name = "Cinema"
   diary = "/films/"          # also show recent Letterboxd posters, linking to this page
 ```
 
-Topics appear in the order they are listed. `books` needs the [reading log](#reading-log-books) set up and `diary` the [Letterboxd diary](#letterboxd-diary).
+Topics appear in the order they are listed. `books` needs the [reading log](#reading-log-books) set up, `albums` the [album log](#album-log) and `diary` the [Letterboxd diary](#letterboxd-diary).
 
 The motto is set in [GFS Didot](https://fonts.google.com/specimen/GFS+Didot), which covers Latin and polytonic Greek. It is only loaded on the home page, and only when a motto is set.
 
@@ -130,7 +137,7 @@ KaTeX is loaded from `https://cdn.jsdelivr.net/npm`, version `0.16.22`, unless y
 
 ### Running head
 
-Every single page (posts, the About page, the books and Letterboxd pages) starts with a small header line: the site title, which links back to the home page, followed by the entries of the `nav` menu, set in small caps above a hairline rule. The menu entry with `identifier: home` is left out, since the title already goes home, and the entry for the current page is highlighted.
+Every single page (posts, the About page, the books, albums and Letterboxd pages) starts with a small header line: the site title, which links back to the home page, followed by the entries of the `nav` menu, set in small caps above a hairline rule. The menu entry with `identifier: home` is left out, since the title already goes home, and the entry for the current page is highlighted.
 
 It replaces the menu the theme used to put at the very bottom of single pages. To go back to that, set `hideRunningHead: true`.
 
@@ -173,16 +180,79 @@ The [home page](#home-page) can show your latest books under a topic. To use the
 
 Each entry has the fields from the data file, with `finished` parsed as a date, plus `stars` (the rating as text, e.g. `★★★★½`) and `page` (the linked post, or empty).
 
+### Album log
+
+A page of the albums you have listened to, grouped by month, newest first, with the cover in the margin. Each entry shows the title, artist, release year, an optional rating, an optional short review, and an optional link to a post about the album. It works like the [reading log](#reading-log-books), with its own data file.
+
+1. List your albums in `data/albums.toml`. Usually an entry is just the album's MusicBrainz address, the date and your rating:
+
+   ```toml
+   [[albums]]
+   mbid = "https://musicbrainz.org/release-group/017f2a37-a78f-3578-9611-fa40408e5d90"
+   listened = "2026-09-12"                  # required, YYYY-MM-DD
+   rating = 4.5                             # optional, 0.5 to 5
+   review = "*The Ninth Wave* is a novel."  # optional, Markdown
+   post = "posts/hounds-of-love"            # optional, path under content/
+   ```
+
+   `mbid` identifies the album's [MusicBrainz](https://musicbrainz.org/) *release group*: paste its page URL or just the ID. To find it, search for the album on MusicBrainz, open the release group (not one specific release), and copy the address.
+
+   **Overrides.** `title`, `artist`, `year` and `cover` (any image URL) can be written in the entry to replace what MusicBrainz says, or to log an album that isn't on MusicBrainz at all; then `title` and `artist` are required. An entry that has all of `title`, `artist` and `year` is not looked up.
+
+2. Save the details and covers by running, from your site root:
+
+   ```shell
+   python3 themes/hugo-tufte/scripts/sync-albums.py
+   ```
+
+   It compares `data/albums.toml` with what is already saved: new albums get their title, artist and year from MusicBrainz and their front cover from the [Cover Art Archive](https://coverartarchive.org/); albums you removed have their saved files deleted; everything else is left alone, so it only downloads what's new. It saves:
+
+   - `data/musicbrainz.json`: title, artist and year per album
+   - `assets/covers/`: one image per album
+
+   **Commit both with your site.** The build itself never contacts MusicBrainz: it reads these files and resizes the covers for the page. An album that hasn't been saved yet is left out, with a warning telling you to run the script. Run it again whenever you add or remove albums; `--refresh` re-downloads everything. It needs Python 3.11+ and nothing else, and waits a second between MusicBrainz requests, as MusicBrainz asks.
+
+3. Create the page, e.g. `content/albums.md`:
+
+   ```yaml
+   ---
+   title: "Albums"
+   layout: albums
+   ---
+   ```
+
+To show recent covers on the home page, set `albums` on a topic (see [Home page](#home-page)). In your own templates, use `{{ partial "albums-strip.html" (dict "count" 6 "log" "/albums/") }}`, or `partialCached "albums.html" . "albums"` for the entries themselves: the data file's fields with `title`, `artist` and `year` filled in, plus `listened` as a date, `stars`, `page` (the linked post) and `cover` (an image resource).
+
 ### Letterboxd diary
 
-Shows the films you log on [Letterboxd](https://letterboxd.com/), read from your public RSS feed when the site is built. Set your username:
+Shows the films you log on [Letterboxd](https://letterboxd.com/). Set your username:
 
 ```yaml
 params:
   letterboxd: your_username
 ```
 
-**Diary page.** A page with `layout: letterboxd` (e.g. `content/films.md`) lists the entries grouped by month watched: title, year, rating, ♥ for liked, ↻ for a rewatch, the date, and your review text if you wrote one, with the poster in the margin. A summary line on top gives the number of films, reviews, likes and the mean rating.
+Then save your diary by running, from your site root:
+
+```shell
+python3 themes/hugo-tufte/scripts/sync-letterboxd.py
+```
+
+It reads your public Letterboxd RSS feed and saves:
+
+- `data/letterboxd.json`: your latest diary entries
+- `assets/posters/`: one poster per film
+
+**Commit both with your site.** The build itself never contacts Letterboxd: it reads these files and resizes the posters for the page, so visitors load nothing from Letterboxd either. Without a saved diary, the build warns and the diary page says "Nothing logged yet."
+
+Each run only downloads what's new:
+
+- **Entries.** The saved entries mirror the feed, which holds your 50 most recent diary entries: new ones are added, edited ones updated (an edited review is picked up), and ones that drop out of the feed are removed. The diary page says so and links to your full diary on Letterboxd. If the feed can't be fetched, nothing changes.
+- **Posters.** Downloaded only for films that don't have one yet, and deleted when no saved entry uses them.
+
+To keep the diary current, run the script before each build on your host (`python3 themes/hugo-tufte/scripts/sync-letterboxd.py && hugo`) and schedule regular rebuilds. The script needs Python 3.8+ and the `hugo` command, which it uses to read your username from the site config; pass `--user` to skip that.
+
+**Diary page.** A page with `layout: letterboxd` (e.g. `content/films.md`) lists the entries grouped by month watched: title, year, rating, ♥ for liked, ↻ for a rewatch, the date, and your review text if you wrote one, with the poster in the margin. A summary line on top gives the number of films, reviews, likes and the mean rating, followed by a note that only the latest entries are shown, with a link to the full diary on Letterboxd.
 
 **Poster strip.** A row of recent posters linking to Letterboxd, for use in your own templates:
 
@@ -190,23 +260,9 @@ params:
 {{ partial "letterboxd-strip.html" (dict "count" 6 "diary" "/films/") }}
 ```
 
-`count` defaults to 6; `diary`, if given, adds a link to your diary page.
+`count` defaults to 6; `diary`, if given, adds a link to your diary page. On the home page, set `diary` on a topic instead (see [Home page](#home-page)).
 
 **Data.** `partialCached "letterboxd.html" . "letterboxd"` returns the entries, most recently watched first, with the fields `title`, `year`, `link`, `watched` (a date), `rating`, `stars`, `liked`, `rewatch`, `poster` (a resized image resource, or empty) and `review` (HTML, only for reviews).
-
-Things to know:
-
-- Posters are downloaded and resized to small WebP images at build time, so visitors never load anything from Letterboxd.
-- If the feed can't be fetched, the build still succeeds with a warning: the strip is left out and the diary page says it couldn't load.
-- The site only changes when it is rebuilt. Hugo reuses the downloaded feed until its cache expires; set how long in your site config, and schedule regular rebuilds on your host to keep the diary current:
-
-  ```yaml
-  caches:
-    getresource:
-      maxAge: 3h
-  ```
-
-- The feed only holds your most recent diary entries (about 50), so the summary describes recent months, not your whole history.
 
 ### Site Parameters
 

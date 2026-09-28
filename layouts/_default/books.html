@@ -21,7 +21,7 @@
         </span>
       </p>
       {{ with .review }}<div class="diary-review">{{ . | markdownify }}</div>{{ end }}
-      {{ with .page }}<p class="book-post"><a href="{{ .RelPermalink }}">Read the full note: {{ .Title }}</a></p>{{ end }}
+      {{ with .page }}<p class="diary-post"><a href="{{ .RelPermalink }}">Read the full note: {{ .Title }}</a></p>{{ end }}
     </div>
   {{ end }}
   </section>
