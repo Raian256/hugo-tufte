@@ -1,5 +1,5 @@
 /* ------------------------------------------------------------------------ */
-/* Diary-style pages: layouts "letterboxd", "books" and "albums". */
+/* Diary-style pages: layouts "letterboxd", "books" and "records". */
 /* ------------------------------------------------------------------------ */
 
 .diary {
@@ -102,12 +102,12 @@
 
 }
 
-.albums {
-    .album-artist {
+.records {
+    .record-artist {
         margin-left: 0.3em;
     }
 
-    .album-artist::before {
+    .record-artist::before {
         content: "— ";
         color: #6f6a5f;
     }
@@ -116,8 +116,17 @@
         margin-left: 0.4em;
     }
 
-    .diary-head .marginnote img {
-        height: 90px;
+    // The cover sits inline before the title, scaled to it: a small square that
+    // reads as part of the line rather than an illustration. Keeping it out of
+    // the margin leaves that column to the shelf marks alone, so they stay
+    // level with their own entry instead of drifting down the page.
+    .record-cover {
+        width: 1.25em;
+        height: 1.25em;
+        margin-right: 0.45em;
+        vertical-align: -0.22em;
+        border-radius: 1px;
+        box-shadow: 0 0 0 1px rgba(17, 17, 17, 0.15);
     }
 }
 

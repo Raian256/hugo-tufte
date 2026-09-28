@@ -1,9 +1,10 @@
 # Reading log shown by the page with `layout = "books"` (content/books.md).
-# Only title, author and finished are required.
+# Only title, authors and finished are required; `authors` is a list, so a
+# book with two names on the spine is filed under each of them.
 
 [[books]]
 title = "The Visual Display of Quantitative Information"
-author = "Edward R. Tufte"
+authors = ["Edward R. Tufte"]
 finished = "2024-03-02"
 rating = 5
 review = "The book this theme is named after. *Above all else show the data.*"
@@ -11,12 +12,12 @@ post = "posts/tufte-features"
 
 [[books]]
 title = "Envisioning Information"
-author = "Edward R. Tufte"
+authors = ["Edward R. Tufte"]
 finished = "2024-01-15"
 rating = 4.5
 review = "Escaping flatland, one small multiple at a time."
 
 [[books]]
 title = "Beautiful Evidence"
-author = "Edward R. Tufte"
+authors = ["Edward R. Tufte"]
 finished = "2023-10-08"

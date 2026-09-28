@@ -1,7 +1,7 @@
 {{/*
-  Reads data/books.toml and returns its entries newest first, with `stars`
-  rendered and `post` resolved to a published page (or nil if it doesn't exist
-  or is still a draft).
+  Reads data/books.toml and returns its entries newest first, with the entry's
+  `authors` joined into `by` for display, `stars` rendered and `post` resolved
+  to a published page (or nil if it doesn't exist or is still a draft).
 
   `finished` may be "YYYY", "YYYY-MM" or "YYYY-MM-DD" (see partial-date.html).
   Each entry gets `finished` as a date for sorting, plus `datetime`, `when`
@@ -17,6 +17,7 @@
   {{ $d := partial "partial-date.html" (dict "value" .finished "what" (printf "books: %q, finished" .title)) }}
 
   {{ $books = $books | append (merge . (dict
+    "by" (delimit .authors ", " " & ")
     "finished" $d.date
     "datetime" $d.datetime
     "when" $d.when

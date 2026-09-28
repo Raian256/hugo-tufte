@@ -1,12 +1,14 @@
 {{/*
-  The distinct people (authors, artists) in a log, sorted for an index.
-  Usage: partial "log-people.html" (dict "entries" $books "key" "author" "sort" "surname")
+  The distinct people (authors, artists) in a log, sorted for an index. The
+  entries' `key` field is a slice, so someone who shares a record with three
+  others is listed once, on their own.
+  Usage: partial "log-people.html" (dict "entries" $books "key" "authors" "sort" "surname")
     sort  "surname": by the last word of the name ("G. H. Hardy" under H)
           "name":    by the whole name, ignoring a leading "The"
   Returns a slice of dicts: name, sortKey.
 */}}
 {{ $names := slice }}
-{{ range .entries }}{{ with index . $.key }}{{ $names = $names | append . }}{{ end }}{{ end }}
+{{ range .entries }}{{ range index . $.key }}{{ $names = $names | append . }}{{ end }}{{ end }}
 {{ $people := slice }}
 {{ range uniq $names }}
   {{ $sortKey := . }}

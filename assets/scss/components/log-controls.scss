@@ -1,5 +1,5 @@
 /* ------------------------------------------------------------------------ */
-/* Book and album logs: the filter line and the by-person view.            */
+/* Book and record logs: the filter line and the by-person view.           */
 /* ------------------------------------------------------------------------ */
 
 $log-ink: #111;
@@ -106,9 +106,17 @@ $log-rule: #d8d4c8;
     }
 }
 
-// Tags on an entry: shelf marks in the right margin, level with the title.
-.marginnote.log-tags {
-    line-height: 1.5;
+// Tags on an entry: the mark follows the author or year as one more piece of
+// the entry's description, faint and small, so a tag repeated down the page
+// stays quiet rather than ruling a column of its own.
+.log-tags {
+    margin-left: 0.5em;
+    white-space: nowrap;
+
+    .log-tag {
+        font-size: 0.8em;
+        color: $log-faded;
+    }
 }
 
 .log-tag {
@@ -178,6 +186,15 @@ $log-rule: #d8d4c8;
         li {
             font-size: 1.4rem;
             padding: 0.15rem 0;
+        }
+
+        // The others behind a work, shown under whichever of them you are
+        // reading: a conductor's entry still says who played. Faint, so the
+        // column of titles stays what you scan.
+        .log-with {
+            font-size: 0.8em;
+            color: $log-faded;
+            margin-left: 0.4em;
         }
 
         .log-note {

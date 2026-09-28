@@ -1,0 +1,59 @@
+{{/*
+  Reads data/records.toml and returns its entries newest first, with `title`,
+  `artists` (a slice of names) and `year` filled in, `by` as those names joined
+  for display, `listened` parsed as a date for sorting (it may be "YYYY",
+  "YYYY-MM" or "YYYY-MM-DD"; see partial-date.html, whose `datetime`, `when`,
+  `month` and `day` are added too), `stars` rendered, `page` resolved to a
+  published post (or nil), and `cover` as a resized image resource (or nil).
+
+  Nothing is downloaded here. Details and covers come from files saved by
+  scripts/sync-records.py: data/musicbrainz.json and assets/covers/. Values
+  written in the data file take precedence.
+*/}}
+{{ $saved := hugo.Data.musicbrainz | default dict }}
+{{ $records := slice }}
+{{ range hugo.Data.records.records }}
+  {{ $mbid := "" }}
+  {{ with .mbid }}{{ with findRE `[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}` . 1 }}{{ $mbid = index . 0 }}{{ end }}{{ end }}
+
+  {{ $details := index $saved $mbid | default dict }}
+  {{ $title := .title | default $details.title }}
+  {{ $artists := .artists | default $details.artists }}
+  {{ $year := .year | default $details.year }}
+  {{ if not (and $title $artists) }}
+    {{ warnf "records: %q isn't saved yet; run `python3 themes/hugo-tufte/scripts/sync-records.py` from the site root" (.mbid | default "an entry") }}
+    {{ continue }}
+  {{ end }}
+
+  {{ $post := "" }}
+  {{ with .post }}
+    {{ with site.GetPage . }}{{ $post = . }}{{ else }}{{ warnf "records: no published page at %q" . }}{{ end }}
+  {{ end }}
+
+  {{/* Cover file name: a hash of `cover` if given, else the MBID. Must match sync-records.py. */}}
+  {{ $key := $mbid }}
+  {{ with .cover }}{{ $key = substr (sha1 .) 0 16 }}{{ end }}
+  {{ $cover := "" }}
+  {{ with $key }}
+    {{ with resources.GetMatch (printf "covers/%s.*" .) }}{{ $cover = .Fill "180x180 webp q80" }}{{ end }}
+  {{ end }}
+
+  {{ $d := partial "partial-date.html" (dict "value" .listened "what" (printf "records: %q, listened" $title)) }}
+
+  {{ $records = $records | append (merge . (dict
+    "mbid" $mbid
+    "title" $title
+    "artists" $artists
+    "by" (delimit $artists ", " " & ")
+    "year" $year
+    "listened" $d.date
+    "datetime" $d.datetime
+    "when" $d.when
+    "month" $d.month
+    "day" $d.day
+    "stars" (partial "stars.html" .rating)
+    "page" $post
+    "cover" $cover
+  )) }}
+{{ end }}
+{{ return sort $records "listened" "desc" }}

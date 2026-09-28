@@ -1,12 +1,14 @@
 {{/*
   A log grouped by person (author, artist), like the index of a book: each
-  person with a count and mean rating, then their works, newest first.
-  Usage: partial "log-by-person.html" (dict "entries" $books "key" "author" "people" $people "noun" "books" "singular" "book")
+  person with a count and mean rating, then their works, newest first. The
+  entries' `key` field is a slice, so a work several people made together is
+  listed under each of them, naming the others beside it.
+  Usage: partial "log-by-person.html" (dict "entries" $books "key" "authors" "people" $people "noun" "books" "singular" "book")
 */}}
 <section class="log-view log-by-person" data-view="person" hidden>
 {{ range .people }}
   {{ $name := .name }}
-  {{ $works := where $.entries $.key $name }}
+  {{ $works := where $.entries $.key "intersect" (slice $name) }}
   {{ $rated := where $works "rating" "gt" 0 }}
   <div class="log-group">
     <h2 class="log-person">{{ $name }}
@@ -18,11 +20,14 @@
     <ul class="log-works">
       {{ range $w := $works }}
       <li class="log-item" data-rating="{{ $w.rating | default 0 }}" data-tags="{{ delimit ($w.tags | default slice) "|" }}">
-        {{ partial "log-tags.html" $w.tags }}
         <span class="diary-line">
           <span class="diary-name">
             <span class="diary-title">{{ $w.title }}</span>
+            {{- with complement (slice $name) (index $w $.key) }}
+            <span class="log-with">with {{ delimit . ", " " & " }}</span>
+            {{- end }}
             {{- with $w.page }} <a class="log-note" href="{{ .RelPermalink }}">full note</a>{{ end }}
+            {{ partial "log-tags.html" $w.tags }}
           </span>
           <span class="diary-meta">
             <span class="stars"{{ with $w.stars }} aria-label="{{ $w.rating }} out of 5"{{ end }}>{{ $w.stars }}</span>

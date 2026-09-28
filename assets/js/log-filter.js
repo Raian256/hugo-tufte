@@ -1,4 +1,4 @@
-// Filtering for the book and album logs (layouts "books" and "albums").
+// Filtering for the book and record logs (layouts "books" and "records").
 // The page renders every entry twice, by date and by person; this shows one
 // view, hides entries below the minimum rating or off the chosen shelf (tag),
 // hides headings left empty, and keeps the choice in the URL

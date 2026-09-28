@@ -9,7 +9,7 @@ This fork is meant for a **personal site** rather than a plain blog. It is somew
 - **A home page like a book's opening.** A motto, a few lines about you, then your posts gathered under topic headings, each with a gloss in the margin.
 - **Essays with margins.** Sidenotes, margin notes, epigraphs and KaTeX math, as in Tufte's own books.
 - **A reading log.** Books you have finished, with ratings, a line or two of review, and a link to the full essay when there is one, all kept in a single data file.
-- **An album log.** The same for records: ratings, short reviews and links to posts, with covers fetched from the open [Cover Art Archive](https://coverartarchive.org/).
+- **A record log.** The same for music: ratings, short reviews and links to posts, with covers fetched from the open [Cover Art Archive](https://coverartarchive.org/). A record credited to four people is filed under each of them, so a concerto sits under its composer, its orchestra, its conductor and its soloist alike.
 - **A film diary.** Your [Letterboxd](https://letterboxd.com/) diary saved into your site: your latest films with posters, ratings, likes and reviews, and a link to the full diary on Letterboxd.
 - **A way home.** A small running head on every inner page, with the site title and menu, like the header on a book's page.
 
@@ -28,7 +28,7 @@ Hugo-Tufte has changed hands a few times:
 
 ### Prerequisite: Hugo Extended
 
-You'll need Hugo **Extended**, since this theme uses SCSS. The reading log, album log and film diary need version **0.156 or newer**, and their sync scripts need Python 3.
+You'll need Hugo **Extended**, since this theme uses SCSS. The reading log, record log and film diary need version **0.156 or newer**, and their sync scripts need Python 3.
 
 - On Windows, with [Chocolatey](https://chocolatey.org/):
   ```shell
@@ -55,7 +55,7 @@ The showcase pages are:
 - `The big old test page`
 - `Tufte CSS`
 - `Books`, the reading log
-- `Albums`, the album log
+- `Records`, the record log
 - The home page itself, configured under `params.home` in `exampleSite/config.yaml`
 
 ### For a new site
@@ -83,7 +83,7 @@ The home page is, top to bottom:
 1. The site title and menu.
 2. A **motto** in large type, with an optional gloss in the margin.
 3. An **intro**: the body of your `content/_index.md`.
-4. **Topics**: one heading per topic, each listing the newest posts in the matching category, with the topic's gloss in the margin. A topic can also show your latest books, album covers or Letterboxd posters. An empty topic reads "Forthcoming."
+4. **Topics**: one heading per topic, each listing the newest posts in the matching category, with the topic's gloss in the margin. A topic can also show your latest books, record covers or Letterboxd posters. An empty topic reads "Forthcoming."
 
 Everything is configured under `params.home`, and every part is optional:
 
@@ -109,7 +109,7 @@ Everything is configured under `params.home`, and every part is optional:
   [[params.home.topics]]
   key = "music"
   name = "Musica"
-  albums = "/albums/"        # also show recent album covers, linking to this page
+  records = "/records/"      # also show recent record covers, linking to this page
 
   [[params.home.topics]]
   key = "film"
@@ -117,7 +117,7 @@ Everything is configured under `params.home`, and every part is optional:
   diary = "/films/"          # also show recent Letterboxd posters, linking to this page
 ```
 
-Topics appear in the order they are listed. `books` needs the [reading log](#reading-log-books) set up, `albums` the [album log](#album-log) and `diary` the [Letterboxd diary](#letterboxd-diary).
+Topics appear in the order they are listed. `books` needs the [reading log](#reading-log-books) set up, `records` the [record log](#record-log) and `diary` the [Letterboxd diary](#letterboxd-diary).
 
 The motto is set in [GFS Didot](https://fonts.google.com/specimen/GFS+Didot), which covers Latin and polytonic Greek. It is only loaded on the home page, and only when a motto is set.
 
@@ -137,26 +137,28 @@ KaTeX is loaded from `https://cdn.jsdelivr.net/npm`, version `0.16.22`, unless y
 
 ### Running head
 
-Every single page (posts, the About page, the books, albums and Letterboxd pages) starts with a small header line: the site title, which links back to the home page, followed by the entries of the `nav` menu, set in small caps above a hairline rule. The menu entry with `identifier: home` is left out, since the title already goes home, and the entry for the current page is highlighted.
+Every single page (posts, the About page, the books, records and Letterboxd pages) starts with a small header line: the site title, which links back to the home page, followed by the entries of the `nav` menu, set in small caps above a hairline rule. The menu entry with `identifier: home` is left out, since the title already goes home, and the entry for the current page is highlighted.
 
 It replaces the menu the theme used to put at the very bottom of single pages. To go back to that, set `hideRunningHead: true`.
 
 ### Reading log (books)
 
-A page listing the books you have read, grouped by year, newest first. Each entry shows the title, author, an optional star rating, an optional short review, and an optional link to a post you wrote about the book.
+A page listing the books you have read, grouped by year, newest first. Each entry shows the title, its author or authors, an optional star rating, an optional short review, and an optional link to a post you wrote about the book.
 
 1. List your books in `data/books.toml`:
 
    ```toml
    [[books]]
    title = "Euthyphro"                # required
-   author = "Plato"                   # required
+   authors = ["Plato"]                # required: a list, however many names
    finished = "2026-09-20"            # required: YYYY-MM-DD, or YYYY-MM / YYYY if that's all you remember
    rating = 4.5                       # optional, 0.5 to 5, halves allowed
    review = "Short and *unresolved*." # optional, Markdown allowed
    tags = ["philosophy"]              # optional, shelves to filter by
    post = "posts/euthyphro"           # optional, path under content/
    ```
+
+   `authors` is a list even for one name, so a book written by two people is filed under each of them in the by-author view, which names the other beside the title.
 
    Order doesn't matter; entries are sorted by `finished`. A date is shown only as precisely as it's written ("5 March", "March", or just under its year's heading), and within a year or month, books without an exact date come after the dated ones. The `post` link only appears once that page exists and is published (or when you build with `--buildDrafts`); otherwise the build prints a `books: no published page at …` warning and the book is shown without the link.
 
@@ -174,67 +176,72 @@ The [home page](#home-page) can show your latest books under a topic. To use the
 
 ```go-html-template
 {{ range first 3 (partialCached "books.html" . "books") }}
-  <em>{{ .title }}</em>, {{ .author }} {{ .stars }} {{ .when }}
+  <em>{{ .title }}</em>, {{ .by }} {{ .stars }} {{ .when }}
   {{ with .page }}<a href="{{ .RelPermalink }}">full note</a>{{ end }}
 {{ end }}
 ```
 
-Each entry has the fields from the data file, with `finished` parsed as a date for sorting, plus `when` (the date as precisely as known, e.g. `March 2024`), `whenInYear` (the same without the year), `datetime` (the date as written), `stars` (the rating as text, e.g. `★★★★½`) and `page` (the linked post, or empty).
+Each entry has the fields from the data file, with `authors` joined into `by` for display and `finished` parsed as a date for sorting, plus `when` (the date as precisely as known, e.g. `March 2024`), `whenInYear` (the same without the year), `datetime` (the date as written), `stars` (the rating as text, e.g. `★★★★½`) and `page` (the linked post, or empty).
 
 #### Browsing the logs
 
-The reading log and album log pages open with a line of controls:
+The reading log and record log pages open with a line of controls:
 
-- **View by** *date* (grouped by year or month) or by *author* / *artist*: an index of people, which is also how to see one person's works in order, sorted by surname for authors and by name for artists (ignoring a leading "The"), each with a count and mean rating, then their works, newest first.
+- **View by** *date* (grouped by year or month) or by *author* / *artist*: an index of people, which is also how to see one person's works in order, sorted by surname for authors and by name for artists (ignoring a leading "The"), each with a count and mean rating, then their works, newest first. A work made by several people appears under each of them, with the others named beside it.
 - **Rated at least** one to five stars. Click a star to set the threshold, and click it again to clear it. Unrated entries are hidden while it's set.
 - **Shelf**: *all* or one tag, when your entries have tags. Tags also appear after each entry in small caps; clicking one picks that shelf, and clicking it again clears it.
 
 Filters apply to both views, headings left empty are hidden, and a line says how many entries are shown. The choice is kept in the address (`/books/?by=person&min=4&tag=mathematics`), so a filtered view can be linked to. A small script, loaded only on these two pages, does the filtering.
 
-### Album log
+### Record log
 
-A page of the albums you have listened to, grouped by month, newest first, with the cover in the margin. Each entry shows the title, artist, release year, an optional rating, an optional short review, and an optional link to a post about the album. It works like the [reading log](#reading-log-books), with its own data file.
+A page of the records you have listened to, grouped by month, newest first, with the cover beside each title. Each entry shows the title, the people behind it, the release year, an optional rating, an optional short review, and an optional link to a post about the record. It works like the [reading log](#reading-log-books), with its own data file.
 
-1. List your albums in `data/albums.toml`. Usually an entry is just the album's MusicBrainz address, the date and your rating:
+1. List your records in `data/records.toml`. Usually an entry is just the record's MusicBrainz address, the date and your rating:
 
    ```toml
-   [[albums]]
+   [[records]]
    mbid = "https://musicbrainz.org/release-group/017f2a37-a78f-3578-9611-fa40408e5d90"
    listened = "2026-09-12"                  # required: YYYY-MM-DD, or YYYY-MM / YYYY
    rating = 4.5                             # optional, 0.5 to 5
    review = "*The Ninth Wave* is a novel."  # optional, Markdown
+   tags = ["pop"]                           # optional, shelves to filter by
    post = "posts/hounds-of-love"            # optional, path under content/
    ```
 
-   Like the reading log, `listened` can be just a year and month or a year when that's all you remember: the album goes under that month's heading without a day, or under a heading for the year alone, after that year's months.
+   Like the reading log, `listened` can be just a year and month or a year when that's all you remember: the record goes under that month's heading without a day, or under a heading for the year alone, after that year's months.
 
-   `mbid` identifies the album's [MusicBrainz](https://musicbrainz.org/) *release group*: paste its page URL or just the ID. To find it, search for the album on MusicBrainz, open the release group (not one specific release), and copy the address.
+   `tags` are shelves, exactly as in the reading log, and genres are what they are for: `["classical"]`, `["jazz"]`. They are deliberately not taken from MusicBrainz, whose genres are too uneven to shelve by — one record is tagged *jazz*, the next *post-rock, art rock, chamber pop, post-punk*. Write your own and reuse the same few, so the shelf control stays short.
 
-   **Overrides.** `title`, `artist`, `year` and `cover` (any image URL) can be written in the entry to replace what MusicBrainz says, or to log an album that isn't on MusicBrainz at all; then `title` and `artist` are required. An entry that has all of `title`, `artist` and `year` is not looked up.
+   `mbid` identifies the record's [MusicBrainz](https://musicbrainz.org/) *release group*: paste its page URL or just the ID. To find it, search for it on MusicBrainz, open the release group (not one specific release), and copy the address.
+
+   **Several artists.** A record's artists are kept as a list, one name per MusicBrainz credit rather than the single joined string it also offers, so Argerich's Chopin concerto is filed under Chopin, the London Symphony Orchestra, Claudio Abbado and Martha Argerich alike. They are shown joined by commas on the page, and each gets its own heading in the by-artist view.
+
+   **Overrides.** `title`, `artists`, `year` and `cover` (any image URL) can be written in the entry to replace what MusicBrainz says, or to log a record that isn't on MusicBrainz at all; then `title` and `artists` are required. An entry that has all of `title`, `artists` and `year` is not looked up.
 
 2. Save the details and covers by running, from your site root:
 
    ```shell
-   python3 themes/hugo-tufte/scripts/sync-albums.py
+   python3 themes/hugo-tufte/scripts/sync-records.py
    ```
 
-   It compares `data/albums.toml` with what is already saved: new albums get their title, artist and year from MusicBrainz and their front cover from the [Cover Art Archive](https://coverartarchive.org/); albums you removed have their saved files deleted; everything else is left alone, so it only downloads what's new. It saves:
+   It compares `data/records.toml` with what is already saved: new records get their title, artists and year from MusicBrainz and their front cover from the [Cover Art Archive](https://coverartarchive.org/); records you removed have their saved files deleted; everything else is left alone, so it only downloads what's new. It saves:
 
-   - `data/musicbrainz.json`: title, artist and year per album
-   - `assets/covers/`: one image per album
+   - `data/musicbrainz.json`: title, artists and year per record
+   - `assets/covers/`: one image per record
 
-   **Commit both with your site.** The build itself never contacts MusicBrainz: it reads these files and resizes the covers for the page. An album that hasn't been saved yet is left out, with a warning telling you to run the script. Run it again whenever you add or remove albums; `--refresh` re-downloads everything. It needs Python 3.11+ and nothing else, and waits a second between MusicBrainz requests, as MusicBrainz asks.
+   **Commit both with your site.** The build itself never contacts MusicBrainz: it reads these files and resizes the covers for the page. A record that hasn't been saved yet is left out, with a warning telling you to run the script. Run it again whenever you add or remove records; `--refresh` re-downloads everything. It needs Python 3.11+ and nothing else, and waits a second between MusicBrainz requests, as MusicBrainz asks.
 
-3. Create the page, e.g. `content/albums.md`:
+3. Create the page, e.g. `content/records.md`:
 
    ```yaml
    ---
-   title: "Albums"
-   layout: albums
+   title: "Records"
+   layout: records
    ---
    ```
 
-To show recent covers on the home page, set `albums` on a topic (see [Home page](#home-page)). In your own templates, use `{{ partial "albums-strip.html" (dict "count" 6 "log" "/albums/") }}`, or `partialCached "albums.html" . "albums"` for the entries themselves: the data file's fields with `title`, `artist` and `year` filled in, plus `listened` as a date for sorting, `when`, `month`, `day` and `datetime` (see the reading log), `stars`, `page` (the linked post) and `cover` (an image resource).
+To show recent covers on the home page, set `records` on a topic (see [Home page](#home-page)). In your own templates, use `{{ partial "records-strip.html" (dict "count" 6 "log" "/records/") }}`, or `partialCached "records.html" . "records"` for the entries themselves: the data file's fields with `title`, `artists` and `year` filled in, plus `by` (the artists joined for display), `listened` as a date for sorting, `when`, `month`, `day` and `datetime` (see the reading log), `stars`, `page` (the linked post) and `cover` (an image resource).
 
 ### Letterboxd diary
 

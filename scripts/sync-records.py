@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Save album details and covers for the album log, so builds need no network.
+"""Save record details and covers for the record log, so builds need no network.
 
-Reads data/albums.toml and brings the saved files in line with it:
+Reads data/records.toml and brings the saved files in line with it:
 
-  data/musicbrainz.json   title, artist and year per MusicBrainz release group
-  assets/covers/          one cover image per album
+  data/musicbrainz.json   title, artists and year per MusicBrainz release group
+  assets/covers/          one cover image per record
 
-Albums that are already saved are skipped, new ones are downloaded, and saved
-files for albums no longer in the log are deleted. Commit the saved files with
-your site. Run from the site root, after editing data/albums.toml:
+Records that are already saved are skipped, new ones are downloaded, and saved
+files for records no longer in the log are deleted. Commit the saved files with
+your site. Run from the site root, after editing data/records.toml:
 
-  python3 themes/hugo-tufte/scripts/sync-albums.py            # sync
-  python3 themes/hugo-tufte/scripts/sync-albums.py --refresh  # re-download everything
+  python3 themes/hugo-tufte/scripts/sync-records.py            # sync
+  python3 themes/hugo-tufte/scripts/sync-records.py --refresh  # re-download everything
 
 Needs Python 3.11+ and nothing else.
 """
@@ -29,9 +29,9 @@ from pathlib import Path
 try:
     import tomllib
 except ModuleNotFoundError:
-    sys.exit("sync-albums: needs Python 3.11 or newer (for tomllib)")
+    sys.exit("sync-records: needs Python 3.11 or newer (for tomllib)")
 
-USER_AGENT = "hugo-tufte-sync-albums/1.0 (https://github.com/Raian256/hugo-tufte)"
+USER_AGENT = "hugo-tufte-sync-records/1.0 (https://github.com/Raian256/hugo-tufte)"
 MUSICBRAINZ = "https://musicbrainz.org/ws/2/release-group/{}?inc=artist-credits&fmt=json"
 COVER_ART = "https://coverartarchive.org/release-group/{}/front-250"
 MBID = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
@@ -47,7 +47,7 @@ def mbid_of(entry):
 def cover_key(entry, mbid):
     """File name (without extension) of an entry's cover: the MBID, or a hash of the `cover` URL.
 
-    Must match layouts/partials/albums.html.
+    Must match layouts/partials/records.html.
     """
     if entry.get("cover"):
         return hashlib.sha1(entry["cover"].encode()).hexdigest()[:16]
@@ -74,10 +74,13 @@ class Fetcher:
 def fetch_details(fetcher, mbid):
     body, _ = fetcher.get(MUSICBRAINZ.format(mbid), gap=1.1)
     data = json.loads(body)
-    artist = "".join(c["name"] + c.get("joinphrase", "") for c in data.get("artist-credit", []))
+    # One name per credit rather than MusicBrainz's single joined string, so a
+    # record with a composer, an orchestra, a conductor and a soloist is filed
+    # under each of them.
+    artists = [c["name"] for c in data.get("artist-credit", [])]
     return {
         "title": data["title"],
-        "artist": artist,
+        "artists": artists,
         "year": (data.get("first-release-date") or "")[:4],
     }
 
@@ -89,13 +92,13 @@ def main():
     args = parser.parse_args()
 
     site = Path(args.site)
-    log_file = site / "data" / "albums.toml"
+    log_file = site / "data" / "records.toml"
     saved_file = site / "data" / "musicbrainz.json"
     covers = site / "assets" / "covers"
     if not log_file.exists():
-        sys.exit(f"sync-albums: {log_file} not found; run from the site root or pass --site")
+        sys.exit(f"sync-records: {log_file} not found; run from the site root or pass --site")
 
-    entries = tomllib.loads(log_file.read_text()).get("albums", [])
+    entries = tomllib.loads(log_file.read_text()).get("records", [])
     saved = {} if args.refresh or not saved_file.exists() else json.loads(saved_file.read_text())
     covers.mkdir(parents=True, exist_ok=True)
     existing_covers = {p.stem: p for p in covers.iterdir() if p.is_file()}
@@ -112,13 +115,13 @@ def main():
             problems += 1
 
         # Details, unless the entry spells them all out.
-        if mbid and not all(entry.get(k) for k in ("title", "artist", "year")):
+        if mbid and not all(entry.get(k) for k in ("title", "artists", "year")):
             wanted_details.add(mbid)
             if mbid not in saved:
                 try:
                     saved[mbid] = fetch_details(fetcher, mbid)
                     downloaded += 1
-                    print(f"  + {saved[mbid]['artist']}, {saved[mbid]['title']}")
+                    print(f"  + {', '.join(saved[mbid]['artists'])}, {saved[mbid]['title']}")
                 except (urllib.error.URLError, KeyError, ValueError) as error:
                     print(f"  ! {name}: couldn't get details from MusicBrainz ({error}); is it a release-group ID?")
                     problems += 1
@@ -155,7 +158,7 @@ def main():
             removed += 1
 
     saved_file.write_text(json.dumps(dict(sorted(saved.items())), indent=2, ensure_ascii=False) + "\n")
-    print(f"sync-albums: {len(entries)} albums, {downloaded} files downloaded, {removed} removed, {problems} problems")
+    print(f"sync-records: {len(entries)} records, {downloaded} files downloaded, {removed} removed, {problems} problems")
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@
   {{ partial "content.header.html" . }}
   {{ with partialCached "books.html" . "books" }}
   {{ $books := . }}
-  {{ $people := partial "log-people.html" (dict "entries" $books "key" "author" "sort" "surname") }}
+  {{ $people := partial "log-people.html" (dict "entries" $books "key" "authors" "sort" "surname") }}
   <div data-log>
     {{ partial "log-controls.html" (dict "noun" "books" "person" "author" "tags" (partial "log-tag-list.html" $books)) }}
 
@@ -15,11 +15,11 @@
         {{ range $b := .items }}
         <div class="diary-entry log-item" data-rating="{{ $b.rating | default 0 }}" data-tags="{{ delimit ($b.tags | default slice) "|" }}">
           <p class="diary-head">
-            {{ partial "log-tags.html" $b.tags }}
             <span class="diary-line">
               <span class="diary-name">
                 <span class="diary-title">{{ $b.title }}</span>
-                <span class="book-author">{{ $b.author }}</span>
+                <span class="book-author">{{ $b.by }}</span>
+                {{ partial "log-tags.html" $b.tags }}
               </span>
               <span class="diary-meta">
                 <span class="stars"{{ with $b.stars }} aria-label="{{ $b.rating }} out of 5"{{ end }}>{{ $b.stars }}</span>
@@ -35,7 +35,7 @@
     {{ end }}
     </section>
 
-    {{ partial "log-by-person.html" (dict "entries" $books "key" "author" "people" $people "noun" "books" "singular" "book") }}
+    {{ partial "log-by-person.html" (dict "entries" $books "key" "authors" "people" $people "noun" "books" "singular" "book") }}
   </div>
   {{ partial "log-script.html" . }}
   {{ else }}

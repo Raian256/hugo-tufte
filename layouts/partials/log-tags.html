@@ -1,11 +1,12 @@
 {{/*
-  An entry's tags, set in the right margin as small-caps shelf marks; clicking
-  one filters the log by it (log-filter.js). Hidden on narrow screens with the
-  rest of the margin; the shelf control still filters there.
-  Place it inside the entry's first paragraph. Usage: partial "log-tags.html" .tags
+  An entry's tags, set inline after its description as small-caps shelf marks;
+  clicking one filters the log by it (log-filter.js). They are kept faint and
+  small, so a tag repeated down a page stays quiet instead of ruling a column
+  of its own. The shelf control above the log filters by the same tags.
+  Place it at the end of the entry's name. Usage: partial "log-tags.html" .tags
 */}}
 {{ with . }}
-<span class="marginnote log-tags">
+<span class="log-tags">
   {{- range . }}<button type="button" class="log-tag" data-tag="{{ . }}">{{ . }}</button>{{ end -}}
 </span>
 {{ end }}

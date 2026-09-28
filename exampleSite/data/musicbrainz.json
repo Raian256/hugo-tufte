@@ -1,12 +1,26 @@
 {
   "017f2a37-a78f-3578-9611-fa40408e5d90": {
     "title": "Hounds of Love",
-    "artist": "Kate Bush",
+    "artists": [
+      "Kate Bush"
+    ],
     "year": "1985"
+  },
+  "3d891faf-6666-414e-9dc0-13d31931e31e": {
+    "title": "Piano Concerto No. 1 in E Minor, Op. 11",
+    "artists": [
+      "Chopin",
+      "London Symphony Orchestra",
+      "Claudio Abbado",
+      "Martha Argerich"
+    ],
+    "year": "2021"
   },
   "8e8a594f-2175-38c7-a871-abb68ec363e7": {
     "title": "Kind of Blue",
-    "artist": "Miles Davis",
+    "artists": [
+      "Miles Davis"
+    ],
     "year": "1959"
   }
 }

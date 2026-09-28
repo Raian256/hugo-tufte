@@ -1,32 +1,28 @@
 {{ define "main" }}
-<article id="main" class="diary albums">
+<article id="main" class="diary records">
   {{ if not site.Params.hideRunningHead }}{{ partial "running-head.html" . }}{{ end }}
   {{ partial "content.header.html" . }}
-  {{ with partialCached "albums.html" . "albums" }}
-  {{ $albums := . }}
-  {{ $people := partial "log-people.html" (dict "entries" $albums "key" "artist" "sort" "name") }}
+  {{ with partialCached "records.html" . "records" }}
+  {{ $records := . }}
+  {{ $people := partial "log-people.html" (dict "entries" $records "key" "artists" "sort" "name") }}
   <div data-log>
-    {{ partial "log-controls.html" (dict "noun" "albums" "person" "artist" "tags" (partial "log-tag-list.html" $albums)) }}
+    {{ partial "log-controls.html" (dict "noun" "records" "person" "artist" "tags" (partial "log-tag-list.html" $records)) }}
 
     <section class="log-view" data-view="date">
-    {{ range partial "log-groups.html" (dict "entries" $albums "field" "month") }}
+    {{ range partial "log-groups.html" (dict "entries" $records "field" "month") }}
       <div class="log-group">
         <h2 class="diary-month">{{ .key }}</h2>
         {{ range $a := .items }}
-        {{ $id := printf "cover-%s" (substr (md5 (print $a.title $a.artist $a.datetime)) 0 10) }}
         <div class="diary-entry log-item" data-rating="{{ $a.rating | default 0 }}" data-tags="{{ delimit ($a.tags | default slice) "|" }}">
           <p class="diary-head">
-            {{ with $a.cover }}
-            <label for="{{ $id }}" class="margin-toggle marginnote-ind">&#8853;</label>
-            <input type="checkbox" id="{{ $id }}" class="margin-toggle"/>
-            <span class="marginnote"><img src="{{ .RelPermalink }}" width="90" height="90" alt="Cover of {{ $a.title }}" loading="lazy"></span>
-            {{ end }}
-            {{ partial "log-tags.html" $a.tags }}
             <span class="diary-line">
               <span class="diary-name">
+                {{/* Decorative: the title beside it already names the record. */}}
+                {{ with $a.cover }}<img class="record-cover" src="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" alt="" loading="lazy">{{ end }}
                 <span class="diary-title">{{ $a.title }}</span>
-                <span class="album-artist">{{ $a.artist }}</span>
+                <span class="record-artist">{{ $a.by }}</span>
                 {{ with $a.year }}<span class="diary-year">{{ . }}</span>{{ end }}
+                {{ partial "log-tags.html" $a.tags }}
               </span>
               <span class="diary-meta">
                 <span class="stars"{{ with $a.stars }} aria-label="{{ $a.rating }} out of 5"{{ end }}>{{ $a.stars }}</span>
@@ -42,7 +38,7 @@
     {{ end }}
     </section>
 
-    {{ partial "log-by-person.html" (dict "entries" $albums "key" "artist" "people" $people "noun" "albums" "singular" "album") }}
+    {{ partial "log-by-person.html" (dict "entries" $records "key" "artists" "people" $people "noun" "records" "singular" "record") }}
   </div>
   {{ partial "log-script.html" . }}
   {{ else }}

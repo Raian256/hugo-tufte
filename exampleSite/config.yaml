@@ -64,8 +64,8 @@ params:
         books: /books/
       - key: music
         name: Music
-        gloss: "The album log, from `data/albums.toml`."
-        albums: /albums/
+        gloss: "The record log, from `data/records.toml`."
+        records: /records/
       - key: hugo
         name: Hugo
   # Hide the site title + menu shown at the top of inner pages
@@ -124,10 +124,10 @@ menu:
       weight: -85
       identifier: books
       url: /books/
-    - name: Albums
+    - name: Records
       weight: -84
-      identifier: albums
-      url: /albums/
+      identifier: records
+      url: /records/
     - name: About
       weight: -80
       identifier: about
