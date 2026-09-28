@@ -40,13 +40,30 @@ params:
   showPoweredBy: false
   # Site wide kill switch for date in pages
   hidedate: false
-  # Site wide kill switch for post summary on home page
-  showSummary: true
   # Site wide kill switch for LaTeX support
   math: true
   # KaTeX version and CDN (these are the defaults, so both can be omitted)
   KaTeXVersion: 0.16.22
   KaTeXCDN: "https://cdn.jsdelivr.net/npm"
+  # Home page. The intro paragraph comes from content/_index.md.
+  home:
+    motto: "Above all else show the data."
+    mottoGloss: "Edward Tufte, *The Visual Display of Quantitative Information*."
+    topicsTitle: "Contents"
+    topicsGloss: "Posts grouped by category, newest first."
+    topics:
+      - key: tufte-css
+        name: Tufte CSS
+        gloss: "Sidenotes, margin notes, figures and the rest."
+      - key: katex
+        name: Mathematics
+        gloss: "Typesetting with KaTeX."
+      - key: books
+        name: Books
+        gloss: "The reading log, from `data/books.toml`."
+        books: /books/
+      - key: hugo
+        name: Hugo
   # Hide the site title + menu shown at the top of inner pages
   hideRunningHead: false
   # Your Letterboxd username, for layout "letterboxd" and partial "letterboxd-strip.html"

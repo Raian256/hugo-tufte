@@ -13,6 +13,11 @@
       href="https://fonts.googleapis.com/css?family=Noto+Serif+SC&display=swap" />
 </noscript>
 
+{{ if and .IsHome site.Params.home.motto }}
+<!-- the landing page motto is set in GFS Didot, which covers polytonic Greek -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=GFS+Didot&display=swap" />
+{{ end }}
+
 {{ $htoptions := (dict "targetPath" "/css/hugo-tufte.min.css" "outputStyle" "compressed" "enableSourceMap" true) }}
 {{ $htstyle := resources.Get "scss/hugo-tufte.scss"| resources.ExecuteAsTemplate "main.scss" .  | css.Sass $htoptions }}
 <link rel="stylesheet" href="{{ $htstyle.Permalink | relURL }}">

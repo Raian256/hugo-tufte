@@ -1,0 +1,107 @@
+/* ------------------------------------------------------------------------ */
+/* Landing home page (params.home): motto, intro, topics. */
+/* ------------------------------------------------------------------------ */
+
+$home-ink: #111;
+$home-faded: #6f6a5f;
+$home-rubric: #8c1c13;
+
+.landing {
+    .motto p {
+        margin-top: 2.8rem;
+        margin-bottom: 0;
+    }
+
+    .motto-text {
+        font-family: "GFS Didot", "et-book", Palatino, serif;
+        font-size: 3.2rem;
+        line-height: 1.1;
+        letter-spacing: 0.02em;
+        color: $home-rubric;
+    }
+
+    .intro p {
+        font-size: 1.6rem;
+    }
+
+    .topics-title {
+        margin-top: 4.2rem;
+        font-style: italic;
+    }
+
+    .topic h3 {
+        margin-top: 2.4rem;
+        margin-bottom: 0.4rem;
+        font-style: normal;
+        font-variant: small-caps;
+        letter-spacing: 0.08em;
+        font-size: 1.7rem;
+
+        a {
+            text-decoration: none;
+            background: none;
+            text-shadow: none;
+            color: $home-ink;
+        }
+
+        a:hover,
+        a:focus-visible {
+            text-decoration: underline;
+            text-underline-offset: 0.2em;
+        }
+
+        .marginnote {
+            font-variant: normal;
+            letter-spacing: normal;
+        }
+    }
+
+    .topic-entries {
+        list-style: none;
+        padding-left: 0;
+        margin-top: 0;
+        width: 55%;
+
+        li {
+            font-size: 1.4rem;
+            padding: 0.25rem 0;
+        }
+    }
+
+    .topic-meta {
+        display: block;
+        font-family: "et-book-roman-old-style", "et-book", serif;
+        font-size: 1.1rem;
+        color: $home-faded;
+    }
+
+    .topic-empty {
+        font-style: italic;
+        font-size: 1.3rem;
+        color: $home-faded;
+        margin-top: 0;
+    }
+
+    .topic-label {
+        margin: 1.4rem 0 0.6rem;
+        font-size: 1.1rem;
+        font-style: italic;
+        color: $home-faded;
+    }
+
+    .book-title {
+        font-style: italic;
+    }
+}
+
+@media (max-width: 760px) {
+    .landing {
+        .motto-text {
+            font-size: 2.4rem;
+        }
+
+        .topic-entries {
+            width: 100%;
+        }
+    }
+}

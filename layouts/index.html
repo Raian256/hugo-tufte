@@ -1,55 +1,93 @@
 {{ define "main" }}
-<article id="main" class="home-page">
-{{ partial "brand.html" . }}
-{{ with .Content }}
-  <section>
-  {{ . }}
-  </section>
-{{ end }}
-<section class="page-list">
-{{ $pgFilter1 := where .Site.RegularPages "Draft" false }}
-{{ $pgFilter2 := where .Site.RegularPages "Params.date" "!=" nil }}
-{{ $pgFilter := $pgFilter1 | intersect $pgFilter2 }}
-{{ range (.Paginate $pgFilter).Pages }}
-  <h2 class="content-title">
-  {{ if .IsNode }}
-  <a href="{{ .Permalink }}">{{ .Title}}</a>
-  {{ else }}
-  <a href="{{ .RelPermalink }}">{{ .Title }}{{ if .Draft }}&nbsp;:: Draft{{end}}</a>
-  {{ end }}
-  </h2>
+{{ $home := site.Params.home | default dict }}
+<article id="main" class="home-page landing">
+{{ partial "brand.html" $ }}
 
-  {{ if .Description }}
-  <p>{{ .Description }}</p>
-  {{ else }}
-  {{ if .Site.Params.showSummary }}
-  <p>{{ truncate 140 .Summary }}</p>
-  {{ end }}
-  {{ end }}
+{{ with $home.motto }}
+<section class="motto">
+  <p>
+    <span class="motto-text"{{ with $home.mottoLang }} lang="{{ . }}"{{ end }}>{{ . }}</span>
+    {{ with $home.mottoGloss }}
+    <label for="mn-motto" class="margin-toggle marginnote-ind">&#8853;</label>
+    <input type="checkbox" id="mn-motto" class="margin-toggle"/>
+    <span class="marginnote">{{ . | markdownify }}</span>
+    {{ end }}
+  </p>
+</section>
 {{ end }}
+
+{{ with $.Content }}
+<section class="intro">
+  {{ . }}
+</section>
+{{ end }}
+
+<section class="topics">
+  {{ with $home.topicsTitle }}
+  <h2 class="topics-title">{{ . }}
+    {{ with $home.topicsGloss }}
+    <label for="mn-topics" class="margin-toggle marginnote-ind">&#8853;</label>
+    <input type="checkbox" id="mn-topics" class="margin-toggle"/>
+    <span class="marginnote">{{ . | markdownify }}</span>
+    {{ end }}
+  </h2>
+  {{ end }}
+
+  {{ range $i, $topic := $home.topics }}
+  {{ $id := printf "mn-topic-%d" $i }}
+  {{ $term := index site.Taxonomies.categories $topic.key }}
+  <div class="topic">
+    <h3>
+      {{ with $term }}<a href="{{ .Page.RelPermalink }}">{{ $topic.name }}</a>{{ else }}{{ $topic.name }}{{ end }}
+      {{ with $topic.gloss }}
+      <label for="{{ $id }}" class="margin-toggle marginnote-ind">&#8853;</label>
+      <input type="checkbox" id="{{ $id }}" class="margin-toggle"/>
+      <span class="marginnote">{{ . | markdownify }}</span>
+      {{ end }}
+    </h3>
+
+    {{ $pages := slice }}
+    {{ with $term }}{{ $pages = .Pages.ByDate.Reverse }}{{ end }}
+    {{ with first ($home.postsPerTopic | default 3) $pages }}
+    <ul class="topic-entries">
+      {{ range . }}
+      <li>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        <span class="topic-meta">
+          {{- with .Params.series }}{{ index . 0 }} · {{ end -}}
+          <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2 January 2006" }}</time>
+        </span>
+      </li>
+      {{ end }}
+    </ul>
+    {{ else }}
+    {{ if not (or $topic.books $topic.diary) }}<p class="topic-empty">Forthcoming.</p>{{ end }}
+    {{ end }}
+
+    {{ with $topic.books }}
+    {{ $shelf := . }}
+    {{ with first 3 (partialCached "books.html" $ "books") }}
+    <p class="topic-label">Lately read · <a href="{{ $shelf | relURL }}">the whole shelf</a></p>
+    <ul class="topic-entries">
+      {{ range . }}
+      <li>
+        <span class="book-title">{{ .title }}</span>, {{ .author }}
+        <span class="topic-meta">
+          {{- with .stars }}{{ . }} · {{ end -}}
+          <time datetime="{{ .finished.Format "2006-01-02" }}">{{ .finished.Format "2 January 2006" }}</time>
+          {{- with .page }} · <a href="{{ .RelPermalink }}">full note</a>{{ end -}}
+        </span>
+      </li>
+      {{ end }}
+    </ul>
+    {{ end }}
+    {{ end }}
+
+    {{ with $topic.diary }}{{ partial "letterboxd-strip.html" (dict "count" 6 "diary" .) }}{{ end }}
+  </div>
+  {{ end }}
 </section>
 
-{{ if and (.Paginator) (gt .Paginator.TotalPages 1) }}
-<hr />
-
-<span class="previous-page">
-{{ if .Paginator.HasPrev }}
-<a class="link-reverse" href="{{.Paginator.Prev.URL}}">«</a>
-{{ end }}
-</span>
-
-<span class="pagination-indicator">
-{{.Paginator.PageNumber}} / {{.Paginator.TotalPages}}
-</span>
-
-<span class="next-page">
-{{ if .Paginator.HasNext }}
-<a class="link-reverse" href="{{.Paginator.Next.URL}}">»</a>
-{{ end }}
-</span>
-
-{{ end }}
-
-{{ partial "footer.html" . }}
+{{ partial "footer.html" $ }}
 </article>
 {{ end }}

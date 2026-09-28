@@ -6,10 +6,13 @@ A theme for the [static site generator Hugo](https://gohugo.io) built on [Tufte-
 
 This fork is meant for a **personal site** rather than a plain blog. It is somewhere to keep short essays on whatever you are thinking about, set with the care of a printed book, next to a record of what you read and watch. It gives you:
 
+- **A home page like a book's opening.** A motto, a few lines about you, then your posts gathered under topic headings, each with a gloss in the margin.
 - **Essays with margins.** Sidenotes, margin notes, epigraphs and KaTeX math, as in Tufte's own books.
 - **A reading log.** Books you have finished, with ratings, a line or two of review, and a link to the full essay when there is one, all kept in a single data file.
 - **A film diary.** Your [Letterboxd](https://letterboxd.com/) diary pulled in at build time: posters, ratings, likes and reviews, with the posters served from your own site.
 - **A way home.** A small running head on every inner page, with the site title and menu, like the header on a book's page.
+
+The theme holds everything that isn't yours: layouts, styles, fonts, the post archetype. Your site holds only content (posts, `content/_index.md`, `data/books.toml`) and configuration (the motto, topics, menus, usernames). To make a site like the author's with your own writing, you shouldn't need a single template of your own.
 
 ## Lineage
 
@@ -51,6 +54,7 @@ The showcase pages are:
 - `The big old test page`
 - `Tufte CSS`
 - `Books`, the reading log
+- The home page itself, configured under `params.home` in `exampleSite/config.yaml`
 
 ### For a new site
 
@@ -64,7 +68,55 @@ Add `theme: 'hugo-tufte'` to your `config.yaml` to let your site know to actuall
 
 Then run `hugo server --buildDrafts --disableFastRender` and open `localhost:1313` or wherever it says in browser.
 
+New posts made with `hugo new posts/<name>.md` start from the theme's archetype, which has a `categories` field for placing the post under a home page topic.
+
+For small styling changes of your own, add `static/css/hugo-tufte-override.css` to your site; it is loaded after the theme's CSS.
+
 ## Features
+
+### Home page
+
+The home page is, top to bottom:
+
+1. The site title and menu.
+2. A **motto** in large type, with an optional gloss in the margin.
+3. An **intro**: the body of your `content/_index.md`.
+4. **Topics**: one heading per topic, each listing the newest posts in the matching category, with the topic's gloss in the margin. A topic can also show your latest books or Letterboxd posters. An empty topic reads "Forthcoming."
+
+Everything is configured under `params.home`, and every part is optional:
+
+```toml
+[params.home]
+  motto = "γνῶθι σεαυτόν"
+  mottoLang = "grc"          # optional language tag, for correct hyphenation and fonts
+  mottoGloss = "*Know thyself.* Inscribed at Delphi."
+  topicsTitle = "Loci communes"
+  topicsGloss = "Notes kept under subject headings. Elsewhere: [films](https://letterboxd.com/you/)."
+  postsPerTopic = 3          # default 3
+
+  [[params.home.topics]]
+  key = "philosophy"         # a value of `categories` in your posts' front matter
+  name = "Philosophia"       # the heading; links to the category page once it has posts
+  gloss = "Plato first, then wherever the argument leads."   # Markdown
+
+  [[params.home.topics]]
+  key = "books"
+  name = "Libri"
+  books = "/books/"          # also show the 3 latest books, linking to this page
+
+  [[params.home.topics]]
+  key = "film"
+  name = "Cinema"
+  diary = "/films/"          # also show recent Letterboxd posters, linking to this page
+```
+
+Topics appear in the order they are listed. `books` needs the [reading log](#reading-log-books) set up and `diary` the [Letterboxd diary](#letterboxd-diary).
+
+The motto is set in [GFS Didot](https://fonts.google.com/specimen/GFS+Didot), which covers Latin and polytonic Greek. It is only loaded on the home page, and only when a motto is set.
+
+### Margin notes in headings
+
+A `marginnote` or `sidenote` can sit inside a heading; the heading is then narrowed to the text column so the note lands in the margin instead of off-screen.
 
 ### Math
 
@@ -110,7 +162,7 @@ A page listing the books you have read, grouped by year, newest first. Each entr
    ---
    ```
 
-To use the same list elsewhere, for instance on a custom home page, call the partial, which returns the entries newest first:
+The [home page](#home-page) can show your latest books under a topic. To use the list anywhere else, call the partial, which returns the entries newest first:
 
 ```go-html-template
 {{ range first 3 (partialCached "books.html" . "books") }}
@@ -173,6 +225,7 @@ Things to know:
 - `KaTeXCDN` string: Base URL KaTeX is loaded from. Default `https://cdn.jsdelivr.net/npm`.
 - `hideRunningHead` boolean: If `true`, drop the [running head](#running-head) and show the menu at the bottom of single pages instead.
 - `letterboxd` string: Your Letterboxd username, for the [Letterboxd diary](#letterboxd-diary).
+- `home` map: The [home page](#home-page): motto and topics.
 
 **Socials**
 

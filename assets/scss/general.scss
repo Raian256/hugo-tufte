@@ -273,3 +273,23 @@ p:lang(ja), span:lang(ja), {
 .marginnote:lang(ja) {
     font-size: 0.9rem;
 }
+
+/* ------------------------------------------------------------------------ */
+/* Margin notes inside headings. Headings are full width, which would push */
+/* their notes off-screen; give them the paragraph width instead. */
+/* ------------------------------------------------------------------------ */
+h1, h2, h3, h4 {
+    &:has(> .marginnote),
+    &:has(> .sidenote) {
+        width: 55%;
+    }
+}
+
+@media (max-width: 760px) {
+    h1, h2, h3, h4 {
+        &:has(> .marginnote),
+        &:has(> .sidenote) {
+            width: 100%;
+        }
+    }
+}
