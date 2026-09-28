@@ -9,7 +9,7 @@
 */}}
 {{ with .items }}
 <div class="cover-strip cover-strip--{{ $.shape | default "portrait" }}">
-  <p class="cover-strip-label">{{ $.label }}{{ with $.more }} · <a href="{{ . | relURL }}">{{ $.moreText }}</a>{{ end }}</p>
+  <p class="cover-strip-label">{{ $.label }}{{ with $.more }} · <a href="{{ strings.TrimPrefix "/" . | relURL }}">{{ $.moreText }}</a>{{ end }}</p>
   <ol>
     {{ range . }}
     <li>

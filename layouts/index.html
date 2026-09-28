@@ -67,7 +67,7 @@
     {{ with $topic.books }}
     {{ $shelf := . }}
     {{ with first 3 (partialCached "books.html" $ "books") }}
-    <p class="topic-label">Lately read · <a href="{{ $shelf | relURL }}">the whole shelf</a></p>
+    <p class="topic-label">Lately read · <a href="{{ strings.TrimPrefix "/" $shelf | relURL }}">the whole shelf</a></p>
     <ul class="topic-entries">
       {{ range . }}
       <li>

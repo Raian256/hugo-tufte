@@ -7,7 +7,7 @@
 {{ $items := slice }}
 {{ range first (.count | default 6) (partialCached "albums.html" . "albums") }}
   {{ $link := "" }}
-  {{ with .page }}{{ $link = .RelPermalink }}{{ else }}{{ with $.log }}{{ $link = relURL . }}{{ end }}{{ end }}
+  {{ with .page }}{{ $link = .RelPermalink }}{{ else }}{{ with $.log }}{{ $link = strings.TrimPrefix "/" . | relURL }}{{ end }}{{ end }}
   {{ $items = $items | append (dict
     "image" .cover
     "link" $link

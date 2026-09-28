@@ -4,7 +4,7 @@
   <span class="series-label">Series:</span>
   {{- $sep := "" -}}
   {{- range . -}}
-    {{ $sep }}<a href="{{ "/series/" | absURL }}{{ . | urlize }}">{{ . }}</a>
+    {{ $sep }}<a href="{{ "series/" | absURL }}{{ . | urlize }}">{{ . }}</a>
     {{- $sep = ", " -}}
   {{- end -}}
 </p>
@@ -31,7 +31,7 @@
   {{- end -}}
 
   {{- range .Params.tags -}}
-  <a href="{{ "/tags/" | absURL }}{{ . | urlize }}">{{ . }}</a>&nbsp;
+  <a href="{{ "tags/" | absURL }}{{ . | urlize }}">{{ . }}</a>&nbsp;
   {{- end -}}
 </span>
 {{- end -}}

@@ -1,6 +1,6 @@
 {{/* A small header on inner pages: site title linking home, then the `nav` menu (minus its "home" entry). */}}
 <nav class="running-head" aria-label="Site">
-  <a class="running-head-home" href="{{ "/" | relURL }}">{{ site.Title }}</a>
+  <a class="running-head-home" href="{{ site.Home.RelPermalink }}">{{ site.Title }}</a>
   <ul>
     {{ range site.Menus.nav }}
     {{ if ne .Identifier "home" }}
