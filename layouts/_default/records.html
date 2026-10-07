@@ -17,8 +17,9 @@
           <p class="diary-head">
             <span class="diary-line">
               <span class="diary-name">
-                {{/* Decorative: the title beside it already names the record. */}}
-                {{ with $a.cover }}<img class="record-cover" src="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" alt="" loading="lazy">{{ end }}
+                {{/* Decorative: the title beside it already names the record. With no
+                     cover, an empty square keeps every title starting in the same place. */}}
+                {{ with $a.cover }}<img class="record-cover" src="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" alt="" loading="lazy">{{ else }}<span class="record-cover record-cover--blank"></span>{{ end }}
                 <span class="diary-title">{{ $a.title }}</span>
                 <span class="record-artist">{{ $a.by }}</span>
                 {{ with $a.year }}<span class="diary-year">{{ . }}</span>{{ end }}

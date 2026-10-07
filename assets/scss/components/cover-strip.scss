@@ -37,13 +37,23 @@
         color: #111;
     }
 
-    img {
+    img,
+    .cover-strip-blank {
         display: block;
         width: 100%;
-        height: auto;
-        object-fit: cover;
         box-shadow: 0 1px 2px rgba(17, 17, 17, 0.25);
         margin-bottom: 0.4rem;
+    }
+
+    img {
+        height: auto;
+        object-fit: cover;
+    }
+
+    // Nothing to show: an empty sleeve, so the row keeps its grid and the
+    // caption and rating sit where its neighbours' do.
+    .cover-strip-blank {
+        background: #eeede6;
     }
 
     li > a:hover .cover-strip-title,
@@ -79,11 +89,13 @@
     }
 }
 
-.cover-strip--portrait img {
+.cover-strip--portrait img,
+.cover-strip--portrait .cover-strip-blank {
     aspect-ratio: 2 / 3;
 }
 
-.cover-strip--square img {
+.cover-strip--square img,
+.cover-strip--square .cover-strip-blank {
     aspect-ratio: 1;
 }
 

@@ -128,6 +128,13 @@
         border-radius: 1px;
         box-shadow: 0 0 0 1px rgba(17, 17, 17, 0.15);
     }
+
+    // No cover art: an empty square of the same size, so the title starts where
+    // every other title on the page does.
+    .record-cover--blank {
+        display: inline-block;
+        background: #eeede6;
+    }
 }
 
 .diary .diary-more {

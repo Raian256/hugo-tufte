@@ -232,6 +232,8 @@ A page of the records you have listened to, grouped by month, newest first, with
 
    **Commit both with your site.** The build itself never contacts MusicBrainz: it reads these files and resizes the covers for the page. A record that hasn't been saved yet is left out, with a warning telling you to run the script. Run it again whenever you add or remove records; `--refresh` re-downloads everything. It needs Python 3.11+ and nothing else, and waits a second between MusicBrainz requests, as MusicBrainz asks.
 
+   **Records with no cover.** Not everything has a front cover in the archive. The script says which records it couldn't get one for and carries on, and they are shown with a blank sleeve, on the record page and in the cover strip alike, so the entries beside them stay aligned. To supply a cover yourself, set `cover` to an image URL.
+
 3. Create the page, e.g. `content/records.md`:
 
    ```yaml

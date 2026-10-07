@@ -23,3 +23,15 @@ mbid = "3d891faf-6666-414e-9dc0-13d31931e31e"
 listened = "2024-01-22"
 rating = 4.5
 tags = ["classical"]
+
+# A record with no cover shows a blank sleeve, so the title, names and rating
+# beside it stay level with every other entry's. That happens when the Cover Art
+# Archive has no front cover for the release group, or — as here — when the
+# record isn't on MusicBrainz at all and the details are written out instead.
+[[records]]
+title = "Rehearsal Tape, March"
+artists = ["The Hall Quartet"]
+year = "2023"
+listened = "2024-01-05"
+rating = 3.5
+tags = ["classical"]

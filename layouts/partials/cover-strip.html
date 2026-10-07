@@ -5,7 +5,8 @@
     more      optional URL for the link after the label
     moreText  its text, e.g. "the full diary"
     shape     "portrait" (2:3, default) or "square"
-    items     slice of dicts with: image (resource), link, tooltip, title, byline, meta (HTML)
+    items     slice of dicts with: image (resource, or nil for a blank sleeve),
+              link, tooltip, title, byline, meta (HTML)
 */}}
 {{ with .items }}
 <div class="cover-strip cover-strip--{{ $.shape | default "portrait" }}">
@@ -14,7 +15,8 @@
     {{ range . }}
     <li>
       {{ if .link }}<a href="{{ .link }}"{{ with .tooltip }} title="{{ . }}"{{ end }}>{{ else }}<span class="cover-strip-item"{{ with .tooltip }} title="{{ . }}"{{ end }}>{{ end }}
-        {{ with .image }}<img src="{{ .RelPermalink }}" width="{{ div .Width 2 }}" height="{{ div .Height 2 }}" alt="" loading="lazy">{{ end }}
+        {{/* No cover: an empty sleeve the same size, so the caption and rating stay level with its neighbours'. */}}
+        {{ with .image }}<img src="{{ .RelPermalink }}" width="{{ div .Width 2 }}" height="{{ div .Height 2 }}" alt="" loading="lazy">{{ else }}<span class="cover-strip-blank"></span>{{ end }}
         <span class="cover-strip-title">{{ .title }}</span>
         {{ with .byline }}<span class="cover-strip-byline">{{ . }}</span>{{ end }}
         {{ with .meta }}<span class="cover-strip-meta">{{ . | safeHTML }}</span>{{ end }}
