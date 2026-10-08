@@ -209,4 +209,9 @@ $log-rule: #d8d4c8;
     .log-by-person .log-works {
         width: 100%;
     }
+
+    // A long shelf wraps between tags rather than running off the screen.
+    .log-controls .log-shelf {
+        white-space: normal;
+    }
 }

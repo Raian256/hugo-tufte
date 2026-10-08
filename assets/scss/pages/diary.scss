@@ -57,9 +57,11 @@
         white-space: nowrap;
     }
 
+    // Widths fit the widest content: five stars, and "Wednesday 30" or
+    // "30 September" in the date's smaller size.
     .diary-meta > .stars {
         display: inline-block;
-        width: 4.6em;
+        width: 5.4em;
     }
 
     .diary-meta > .diary-marks {
@@ -69,9 +71,22 @@
 
     .diary-meta > .diary-date {
         display: inline-block;
-        min-width: 5.2em;
+        min-width: 6.2em;
         text-align: right;
         font-size: 0.85em;
+    }
+
+    // Too narrow for two columns: the rating block would keep its width and
+    // squeeze the name to a word per line. Put it under the name instead; its
+    // fixed-width columns still line up from entry to entry.
+    @media (max-width: 760px) {
+        .diary-line {
+            grid-template-columns: minmax(0, 1fr);
+        }
+
+        .diary-meta {
+            justify-self: start;
+        }
     }
 
     .diary-review p {
