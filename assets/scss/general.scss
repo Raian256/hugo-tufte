@@ -290,6 +290,13 @@ h1, h2, h3, h4 {
     }
 }
 
+/* Page titles stop where the margin column does (55% text + 60% of it). */
+@media (min-width: 761px) {
+    .content-title {
+        max-width: 88%;
+    }
+}
+
 @media (max-width: 760px) {
     h1, h2, h3, h4 {
         &:has(> .marginnote),
