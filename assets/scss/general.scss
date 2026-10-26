@@ -150,6 +150,11 @@ mjx-container[jax="CHTML"][display="true"],
     scrollbar-width: none; */
 }
 
+/* The `:root *` rule above would left-align display math; KaTeX centres it. */
+.katex-display > .katex > .katex-html {
+    text-align: center;
+}
+
 
 /* ------------------------------------------------------------------------ */
 /* Styling for margin/side notes. */
